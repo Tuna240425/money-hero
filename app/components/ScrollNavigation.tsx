@@ -1,102 +1,100 @@
-"use client"
+// app/components/ScrollNavigation.tsx
+'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
 interface ScrollNavigationProps {
   sections: string[]
 }
 
+const getHeaderHeight = () => {
+  const header = document.querySelector('header') as HTMLElement | null
+  return header?.offsetHeight ?? 0
+}
+
 const ScrollNavigation: React.FC<ScrollNavigationProps> = ({ sections }) => {
-  const [currentSection, setCurrentSection] = useState<number>(0)
+  const [current, setCurrent] = useState(0)
+  const [hh, setHh] = useState(0)
 
-  const scrollToSection = (index: number) => {
-    const element = document.getElementById(sections[index])
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-
-  const scrollToNext = () => {
-    if (currentSection < sections.length - 1) {
-      scrollToSection(currentSection + 1)
-    }
-  }
-
-  const scrollToPrev = () => {
-    if (currentSection > 0) {
-      scrollToSection(currentSection - 1)
-    }
-  }
-
-  // 키보드 네비게이션
+  // 헤더 높이 초기화 & 리사이즈 대응
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-        e.preventDefault()
-        scrollToNext()
-      } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-        e.preventDefault()
-        scrollToPrev()
-      }
-    }
+    const update = () => setHh(getHeaderHeight())
+    update()
+    window.addEventListener('resize', update, { passive: true })
+    return () => window.removeEventListener('resize', update)
+  }, [])
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [currentSection])
+  const opts = useMemo(() => ({ behavior: 'smooth' as const }), [])
 
-  // 현재 섹션 감지
+  const scrollToIndex = (index: number) => {
+    const el = document.getElementById(sections[index])
+    if (!el) return
+    const top = el.getBoundingClientRect().top + window.scrollY - (hh || getHeaderHeight())
+    window.scrollTo({ top, ...opts })
+  }
+
+  const onNext = () => current < sections.length - 1 && scrollToIndex(current + 1)
+  const onPrev = () => current > 0 && scrollToIndex(current - 1)
+
+  // 키보드 네비
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight / 2
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); onNext() }
+      if (e.key === 'ArrowUp'   || e.key === 'PageUp')   { e.preventDefault(); onPrev() }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [current, sections])
 
-      sections.forEach((section, index) => {
-        const element = document.getElementById(section)
-        if (element) {
-          const { offsetTop, offsetHeight } = element
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setCurrentSection(index)
-          }
-        }
+  // 현재 섹션 감지 (헤더 높이 보정)
+  useEffect(() => {
+    let ticking = false
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(() => {
+        const mid = window.scrollY + (window.innerHeight / 2)
+        sections.forEach((id, i) => {
+          const el = document.getElementById(id)
+          if (!el) return
+          const top = el.offsetTop - (hh || getHeaderHeight())
+          const bottom = top + el.offsetHeight
+          if (mid >= top && mid < bottom) setCurrent(i)
+        })
+        ticking = false
       })
     }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [sections])
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [sections, hh])
 
   return (
-    <div className="fixed right-6 top-1/2 transform -translate-y-1/2 z-50 hidden lg:flex flex-col items-center space-y-4">
-      {/* 이전 섹션 버튼 */}
+    <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col items-center space-y-4">
       <button
-        onClick={scrollToPrev}
-        disabled={currentSection === 0}
+        onClick={onPrev}
+        disabled={current === 0}
         className="p-2 rounded-full bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         aria-label="이전 섹션"
       >
         <ChevronUp className="w-5 h-5" />
       </button>
 
-      {/* 섹션 인디케이터 */}
       <div className="flex flex-col space-y-2">
-        {sections.map((_, index) => (
+        {sections.map((_, i) => (
           <button
-            key={index}
-            onClick={() => scrollToSection(index)}
-            className={`w-3 h-3 rounded-full transition-all ${
-              currentSection === index
-                ? 'bg-yellow-400 scale-125'
-                : 'bg-gray-400 hover:bg-gray-600'
-            }`}
-            aria-label={`섹션 ${index + 1}로 이동`}
+            key={i}
+            onClick={() => scrollToIndex(i)}
+            className={`w-3 h-3 rounded-full transition-all ${current === i ? 'bg-yellow-400 scale-125' : 'bg-gray-400 hover:bg-gray-600'}`}
+            aria-label={`섹션 ${i + 1}로 이동`}
           />
         ))}
       </div>
 
-      {/* 다음 섹션 버튼 */}
       <button
-        onClick={scrollToNext}
-        disabled={currentSection === sections.length - 1}
+        onClick={onNext}
+        disabled={current === sections.length - 1}
         className="p-2 rounded-full bg-yellow-400 text-black hover:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         aria-label="다음 섹션"
       >

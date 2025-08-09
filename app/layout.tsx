@@ -43,35 +43,24 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <style
           dangerouslySetInnerHTML={{
             __html: `
-            /* Pretendard 폰트 */
             @font-face{font-family:'Pretendard';font-weight:400;font-display:swap;src:local('Pretendard Regular'),url('/fonts/Pretendard-Regular.ttf') format('truetype')}
             @font-face{font-family:'Pretendard';font-weight:600;font-display:swap;src:local('Pretendard SemiBold'),url('/fonts/Pretendard-SemiBold.ttf') format('truetype')}
             @font-face{font-family:'Pretendard';font-weight:700;font-display:swap;src:local('Pretendard Bold'),url('/fonts/Pretendard-Bold.ttf') format('truetype')}
             @font-face{font-family:'Pretendard';font-weight:900;font-display:swap;src:local('Pretendard Black'),url('/fonts/Pretendard-Black.ttf') format('truetype')}
             html,body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,Roboto,'Helvetica Neue','Segoe UI','Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-
-            /* 네비게이션 색상 변수 */
-            :root{
-              --nav-bg:#ffffff;      /* 라이트 모드 배경 */
-              --nav-fg:#0B0F14;      /* 라이트 모드 텍스트 */
-              --nav-border:rgba(0,0,0,.06);
-            }
+            :root{ --nav-bg:#ffffff; --nav-fg:#0B0F14; --nav-border:rgba(0,0,0,.06); }
             @media (prefers-color-scheme: dark){
-              :root{
-                --nav-bg:#0B0F14;    /* 다크 모드 배경 (로고 배경과 매칭) */
-                --nav-fg:#F1E2BF;    /* 다크 모드 텍스트 */
-                --nav-border:rgba(255,255,255,.08);
-              }
+              :root{ --nav-bg:#0B0F14; --nav-fg:#F1E2BF; --nav-border:rgba(255,255,255,.08); }
             }
           `,
           }}
         />
       </head>
-      {/* 고정 헤더 높이에 맞춰 상단 패딩 부여 */}
-      <body className="antialiased pt-14 md:pt-16">
-        <Header />        {/* 네비게이션 */}
+      {/* sticky 헤더는 레이아웃 안에 자리함 → 상단 패딩 불필요 */}
+      <body className="antialiased">
+        <Header />
         {children}
-        <BackToTop />     {/* 데스크톱 전용 맨 위로 버튼 */}
+        <BackToTop />
       </body>
     </html>
   )
