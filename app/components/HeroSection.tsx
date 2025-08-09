@@ -9,27 +9,20 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import {
-  Phone,
-  MessageCircle,
-  ArrowRight,
-  Shield,
-  Zap,
-  Star
-} from "lucide-react"
+import { Phone, MessageCircle, ArrowRight, Shield, Zap, Star } from "lucide-react"
 
 interface FormData {
-  name: string;
-  phone: string;
-  amount: string;
-  counterpartyType: string;
-  reason: string;
-  privacyConsent: boolean;
-  marketingConsent: boolean;
+  name: string
+  phone: string
+  amount: string
+  counterpartyType: string
+  reason: string
+  privacyConsent: boolean
+  marketingConsent: boolean
 }
 
 interface HeroSectionProps {
-  onFormSubmit?: (data: FormData) => void;
+  onFormSubmit?: (data: FormData) => void
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
@@ -46,7 +39,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
     e.preventDefault()
     console.log("Form submitted:", formData)
-    
+
     if (onFormSubmit) {
       onFormSubmit(formData)
     } else {
@@ -178,24 +171,29 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
   )
 
   return (
-    <section className="snap-section bg-gradient-to-br from-background via-accent/20 to-background py-16 md:py-24 relative overflow-hidden min-h-screen flex items-center">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-10 w-2 h-16 bg-yellow-400 transform rotate-12"></div>
-        <div className="absolute top-40 right-20 w-2 h-12 bg-yellow-400 transform -rotate-12"></div>
-        <div className="absolute bottom-40 left-20 w-2 h-20 bg-yellow-400 transform rotate-45"></div>
-        <div className="absolute bottom-20 right-10 w-2 h-14 bg-yellow-400 transform -rotate-45"></div>
-      </div>
-      
-      <div className="container mx-auto px-4 relative">
+    <section className="relative overflow-hidden min-h-screen flex items-center">
+      {/* 배경 비디오 */}
+      <video
+        className="absolute inset-0 w-full h-full object-cover"
+        src="/video.mp4" // 👉 비디오 파일 경로
+        autoPlay
+        muted
+        loop
+        playsInline
+      />
+      {/* 어두운 오버레이 */}
+      <div className="absolute inset-0 bg-black/40" />
+
+      {/* 콘텐츠 */}
+      <div className="container mx-auto px-4 relative z-10">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
+          <div className="space-y-8 text-white">
             <div className="space-y-4">
               <Badge className="bg-yellow-400 text-black hover:bg-yellow-400 font-bold px-4 py-2">
                 <Zap className="w-4 h-4 mr-2" />
                 오늘 17시 이전 접수 시, 당일 회신
               </Badge>
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-foreground leading-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight">
                 <span className="inline-block">빼앗긴&nbsp;돈,</span>
                 <br />
                 <span className="text-yellow-400 inline-block">빠르게</span>
@@ -204,11 +202,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
               </h1>
             </div>
 
-            <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground leading-relaxed font-medium">
-              <span className="inline-block">법의&nbsp;힘으로&nbsp;당신의&nbsp;권리를&nbsp;지키는</span> <span className="text-yellow-400 font-bold inline-block">머니히어로</span>
+            <p className="text-lg sm:text-xl md:text-2xl leading-relaxed font-medium text-white/90">
+              <span className="inline-block">법의&nbsp;힘으로&nbsp;당신의&nbsp;권리를&nbsp;지키는</span>{" "}
+              <span className="text-yellow-400 font-bold inline-block">머니히어로</span>
             </p>
 
-            <div className="flex flex-wrap gap-4 sm:gap-6 text-sm sm:text-base md:text-lg text-muted-foreground">
+            <div className="flex flex-wrap gap-4 sm:gap-6 text-sm sm:text-base md:text-lg text-white/90">
               <div className="flex items-center">
                 <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 mr-2 sm:mr-3" />
                 <span className="inline-block">변호사&nbsp;직접&nbsp;수행</span>
@@ -231,7 +230,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-foreground text-foreground hover:bg-foreground hover:text-background px-6 sm:px-8 py-4 sm:py-6 text-lg sm:text-xl bg-transparent"
+                className="border-white text-white hover:bg-white hover:text-black px-6 sm:px-8 py-4 sm:py-6 text-lg sm:text-xl bg-transparent"
               >
                 <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
                 <span className="inline-block">카톡으로&nbsp;문의</span>

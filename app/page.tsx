@@ -10,6 +10,8 @@ import {
   Phone, MessageCircle, Clock, CheckCircle, Users,
   TrendingUp, FileText, Gavel, DollarSign, ChevronDown,
 } from "lucide-react"
+import Footer from "./components/Footer"
+
 
 interface AccordionItemProps {
   question: string; answer: string; isOpen: boolean; onClick: () => void;
@@ -233,6 +235,10 @@ export default function MoneyHeroLanding() {
           </div>
         </div>
       </section>
+
+      {/* 푸터 */}
+      <Footer />
     </div>
   )
 }
+

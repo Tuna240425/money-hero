@@ -41,7 +41,7 @@ const RabbitHeroLogo: React.FC<RabbitHeroLogoProps> = ({ className = "w-12 h-12"
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-background text-foreground py-12 border-t border-border">
+    <footer className="bg-background text-foreground py-16 md:py-20 border-t border-border">
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>

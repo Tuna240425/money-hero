@@ -17,13 +17,12 @@ const navigationItems: NavigationItem[] = [
   { label: '절차 안내', href: '/process', analytics: 'nav_process' },
   { label: '이용 요금', href: '/pricing', analytics: 'nav_pricing' },
   { label: '성공 사례', href: '/cases', analytics: 'nav_cases' },
-  { label: '회사·변호사 소개', href: '/about', analytics: 'nav_about' },
+  { label: '회사 소개', href: '/about', analytics: 'nav_about' },
 ]
 
 export default function Header() {
   const pathname = usePathname()
 
-  // 스크롤 그림자
   const [isScrolled, setIsScrolled] = useState(false)
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 4)
@@ -32,19 +31,13 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // 다크/라이트 토글 (전역 관리)
-  const [darkMode, setDarkMode] = useState<boolean>(false)
+  const [darkMode, setDarkMode] = useState(false)
   useEffect(() => {
     const saved = localStorage.getItem('theme')
-    if (saved) {
-      const isDark = saved === 'dark'
-      setDarkMode(isDark)
-      document.documentElement.classList.toggle('dark', isDark)
-    } else {
-      const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches
-      setDarkMode(prefersDark)
-      document.documentElement.classList.toggle('dark', prefersDark)
-    }
+    const nextIsDark =
+      saved ? saved === 'dark' : window.matchMedia?.('(prefers-color-scheme: dark)').matches
+    setDarkMode(nextIsDark)
+    document.documentElement.classList.toggle('dark', nextIsDark)
   }, [])
   const toggleTheme = () => {
     const next = !darkMode
@@ -53,15 +46,11 @@ export default function Header() {
     localStorage.setItem('theme', next ? 'dark' : 'light')
   }
 
-  // 모바일 드로어
   const [open, setOpen] = useState(false)
   const drawerRef = useRef<HTMLDivElement>(null)
-
   useEffect(() => {
     const onClickAway = (e: MouseEvent) => {
-      if (open && drawerRef.current && !drawerRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
+      if (open && drawerRef.current && !drawerRef.current.contains(e.target as Node)) setOpen(false)
     }
     const onEsc = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
     document.addEventListener('mousedown', onClickAway)
@@ -71,13 +60,13 @@ export default function Header() {
       document.removeEventListener('keydown', onEsc)
     }
   }, [open])
-
-  // 바디 스크롤 잠금
   useEffect(() => {
     if (!open) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = prev }
+    return () => {
+      document.body.style.overflow = prev
+    }
   }, [open])
 
   const isActive = (href: string) => pathname === href
@@ -86,25 +75,42 @@ export default function Header() {
     <>
       <header
         className={`sticky top-0 z-50 border-b transition-shadow ${isScrolled ? 'shadow-sm' : ''}`}
-        style={{ backgroundColor: 'var(--nav-bg)', color: 'var(--nav-fg)', borderColor: 'var(--nav-border)' }}
+        style={{
+          backgroundColor: 'var(--nav-bg)', // ✅ 네비게이션 바 배경색
+          color: 'var(--nav-fg)',
+          borderColor: 'var(--nav-border)',
+        }}
       >
         <div className="max-w-6xl mx-auto px-4 md:px-6">
-          <div className="flex items-center h-14 md:h-16">
-            {/* 로고 */}
+          <div className="flex items-center py-4 md:py-6">
+            {/* 로고: 투명 배경 PNG 사용 */}
             <Link href="/" aria-label="홈으로" className="flex items-center gap-2" data-analytics="nav_logo">
-              {/* 라이트 */}
+              {/* 라이트 모드 로고 */}
               <Image
                 className="block h-8 w-auto md:h-9 light-logo"
-                src="/logo-transparent.png" alt="MoneyHero" width={120} height={120} priority
+                src="/logo-transparent.png"
+                alt="MoneyHero 로고 (Light)"
+                width={120}
+                height={120}
+                priority
               />
-              {/* 다크 */}
+              {/* 다크 모드 로고 (투명 배경) */}
               <Image
                 className="hidden h-8 w-auto md:h-9 dark-logo"
-                src="/logo.png" alt="MoneyHero" width={120} height={120} priority
+                src="/logo-transparent.png" // 👉 투명 배경 다크 로고
+                alt="MoneyHero 로고 (Dark)"
+                width={120}
+                height={120}
+                priority
               />
+            <span className="text-lg md:text-xl font-bold" style={{ color: 'var(--nav-fg)' }}>
+              Money
+              <span className="text-yellow-400">Hero</span>
+            </span>
+
             </Link>
 
-            {/* 중앙: 데스크톱 네비 (토글 '왼쪽' 위치) */}
+            {/* 네비게이션 메뉴 */}
             <nav className="hidden md:flex items-center space-x-6 lg:space-x-8 mx-6 lg:mx-10">
               {navigationItems.map((item) => (
                 <Link
@@ -118,7 +124,10 @@ export default function Header() {
                 >
                   {item.label}
                   {isActive(item.href) && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full" style={{ background: 'currentColor' }} />
+                    <span
+                      className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
+                      style={{ background: 'currentColor' }}
+                    />
                   )}
                 </Link>
               ))}
@@ -138,7 +147,7 @@ export default function Header() {
                 {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
 
-              {/* CTA들 (데스크톱) */}
+              {/* CTA 버튼 (데스크톱) */}
               <div className="hidden md:flex items-center gap-2">
                 <Link
                   href="#kakao"
@@ -161,7 +170,7 @@ export default function Header() {
                 </Link>
               </div>
 
-              {/* 모바일 햄버거 */}
+              {/* 모바일 햄버거 버튼 */}
               <button
                 type="button"
                 className="md:hidden p-2 rounded-md transition-colors hover:bg-black/5 focus-visible:outline-2 focus-visible:outline-blue-500 focus-visible:outline-offset-2"
@@ -184,7 +193,7 @@ export default function Header() {
             .dark-logo  { display: block !important; }
           }
           :root.dark .light-logo { display: none !important; }
-          :root.dark .dark-logo { display: block !important; }
+          :root.dark .dark-logo  { display: block !important; }
         `}</style>
       </header>
 
