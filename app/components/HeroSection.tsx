@@ -1,6 +1,7 @@
+// app/components/HeroSection.tsx
 "use client"
 
-import React, { useState, FormEvent, ChangeEvent } from "react"
+import React, { useState, useRef, useEffect, FormEvent, ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -36,17 +37,26 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
     marketingConsent: false,
   })
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
-    e.preventDefault()
-    console.log("Form submitted:", formData)
-
-    if (onFormSubmit) {
-      onFormSubmit(formData)
-    } else {
-      alert("상담 신청이 완료되었습니다. 곧 연락드리겠습니다.")
+  /** 배경 비디오 */
+  const videoRef = useRef<HTMLVideoElement>(null)
+  useEffect(() => {
+    if (!videoRef.current) return
+    // 살짝 슬로우
+    videoRef.current.playbackRate = 0.8
+    // iOS 사파리에서 첫 프레임 포지셔닝 튀는 현상 방지
+    const v = videoRef.current
+    const fix = () => { try { v.currentTime = v.currentTime + 0.0001 } catch {}
     }
+    v.addEventListener("loadeddata", fix, { once: true })
+    return () => v.removeEventListener("loadeddata", fix)
+  }, [])
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    onFormSubmit ? onFormSubmit(formData) : alert("상담 신청이 완료되었습니다. 곧 연락드리겠습니다.")
   }
 
+  /** 폼 컴포넌트 */
   const ContactForm: React.FC = () => (
     <Card className="w-full max-w-md mx-auto shadow-2xl border-2 border-yellow-400 bg-card">
       <CardHeader className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-t-lg">
@@ -174,19 +184,32 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
     <section className="relative overflow-hidden min-h-screen flex items-center">
       {/* 배경 비디오 */}
       <video
-        className="absolute inset-0 w-full h-full object-cover"
-        src="/video.mp4" // 👉 비디오 파일 경로
+        ref={videoRef}
+        src="/video.mp4"
         autoPlay
         muted
         loop
         playsInline
+        className="
+          absolute inset-0 w-full h-full
+          object-cover object-[50%_12%]
+          md:object-[45%_6%] lg:object-[42%_0%]
+          md:scale-[1.18]
+          transition-transform duration-300
+        "
       />
-      {/* 어두운 오버레이 */}
-      <div className="absolute inset-0 bg-black/40" />
+
+      {/* 가독성 오버레이 */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/25 via-transparent to-black/35" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
+      </div>
 
       {/* 콘텐츠 */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid md:grid-cols-2 gap-12 items-center">
+          {/* Left copy */}
           <div className="space-y-8 text-white">
             <div className="space-y-4">
               <Badge className="bg-yellow-400 text-black hover:bg-yellow-400 font-bold px-4 py-2">
@@ -194,17 +217,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
                 오늘 17시 이전 접수 시, 당일 회신
               </Badge>
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight">
-                <span className="inline-block">빼앗긴&nbsp;돈,</span>
-                <br />
-                <span className="text-yellow-400 inline-block">빠르게</span>
-                <br />
+                <span className="inline-block">빼앗긴&nbsp;돈,</span><br />
+                <span className="text-yellow-400 inline-block">빠르게</span><br />
                 <span className="inline-block">되찾아드립니다</span>
               </h1>
             </div>
 
             <p className="text-lg sm:text-xl md:text-2xl leading-relaxed font-medium text-white/90">
-              <span className="inline-block">법의&nbsp;힘으로&nbsp;당신의&nbsp;권리를&nbsp;지키는</span>{" "}
-              <span className="text-yellow-400 font-bold inline-block">머니히어로</span>
+              법의&nbsp;힘으로&nbsp;당신의&nbsp;권리를&nbsp;지키는 <span className="text-yellow-400 font-bold">머니히어로</span>
             </p>
 
             <div className="flex flex-wrap gap-4 sm:gap-6 text-sm sm:text-base md:text-lg text-white/90">
@@ -238,6 +258,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
             </div>
           </div>
 
+          {/* Right form */}
           <div className="flex justify-center">
             <ContactForm />
           </div>
