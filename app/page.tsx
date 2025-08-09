@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useState, useEffect, FormEvent, ChangeEvent } from "react"
+import Image from "next/image"
+import HeroSection from "./components/HeroSection"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -25,18 +27,9 @@ import {
   Star,
   ChevronDown,
   Sun,
-  Moon
+  Moon,
+  Scale
 } from "lucide-react"
-
-interface FormData {
-  name: string;
-  phone: string;
-  amount: string;
-  counterpartyType: string;
-  reason: string;
-  privacyConsent: boolean;
-  marketingConsent: boolean;
-}
 
 interface AccordionItemProps {
   question: string;
@@ -54,17 +47,17 @@ interface HeaderProps {
   toggleDarkMode: () => void;
 }
 
-export default function MoneyHeroLanding() {
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    phone: "",
-    amount: "",
-    counterpartyType: "",
-    reason: "",
-    privacyConsent: false,
-    marketingConsent: false,
-  })
+interface FormData {
+  name: string;
+  phone: string;
+  amount: string;
+  counterpartyType: string;
+  reason: string;
+  privacyConsent: boolean;
+  marketingConsent: boolean;
+}
 
+export default function MoneyHeroLanding() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [darkMode, setDarkMode] = useState<boolean>(true)
 
@@ -97,47 +90,33 @@ export default function MoneyHeroLanding() {
     setDarkMode(!darkMode)
   }
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
-    e.preventDefault()
-    console.log("Form submitted:", formData)
+  // Hero Section 폼 제출 핸들러
+  const handleHeroFormSubmit = (data: FormData): void => {
+    console.log("Hero form submitted:", data)
     alert("상담 신청이 완료되었습니다. 곧 연락드리겠습니다.")
   }
 
-  // Rabbit Hero Logo Component
-  const RabbitHeroLogo: React.FC<RabbitHeroLogoProps> = ({ className = "w-12 h-12" }) => (
-    <div className={`${className} flex items-center justify-center`}>
-      <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <g stroke="#FFD700" strokeWidth="2" strokeLinecap="round">
-          <line x1="5" y1="30" x2="15" y2="30" opacity="0.6" />
-          <line x1="8" y1="40" x2="18" y2="40" opacity="0.4" />
-          <line x1="3" y1="50" x2="13" y2="50" opacity="0.6" />
-          <line x1="6" y1="60" x2="16" y2="60" opacity="0.4" />
-        </g>
-        
-        <ellipse cx="50" cy="65" rx="18" ry="25" stroke="#FFD700" strokeWidth="3" fill="none" />
-        <circle cx="50" cy="40" r="15" stroke="#FFD700" strokeWidth="3" fill="none" />
-        
-        <ellipse cx="42" cy="25" rx="4" ry="12" stroke="#FFD700" strokeWidth="3" fill="none" transform="rotate(-15 42 25)" />
-        <ellipse cx="58" cy="25" rx="4" ry="12" stroke="#FFD700" strokeWidth="3" fill="none" transform="rotate(15 58 25)" />
-        
-        <path d="M40 35 Q45 32 50 35 Q55 32 60 35 L58 42 Q50 45 42 42 Z" stroke="#FFD700" strokeWidth="2" fill="none" />
-        
-        <circle cx="45" cy="38" r="2" fill="#FFD700" />
-        <circle cx="55" cy="38" r="2" fill="#FFD700" />
-        
-        <g stroke="#FFD700" strokeWidth="2.5" strokeLinecap="round">
-          <line x1="70" y1="55" x2="75" y2="50" />
-          <rect x="73" y="47" width="6" height="3" rx="1" fill="#FFD700" />
-          <line x1="68" y1="57" x2="72" y2="53" />
-        </g>
-        
-        <path d="M35 55 Q30 60 32 75 Q40 80 45 75 L45 65" stroke="#FFD700" strokeWidth="2" fill="none" />
-        
-        <ellipse cx="44" cy="85" rx="3" ry="8" stroke="#FFD700" strokeWidth="2" fill="none" />
-        <ellipse cx="56" cy="85" rx="3" ry="8" stroke="#FFD700" strokeWidth="2" fill="none" />
-      </svg>
-    </div>
-  )
+  // Logo Component (안전한 버전)
+  const RabbitHeroLogo: React.FC<RabbitHeroLogoProps> = ({ className = "w-12 h-12" }) => {
+    const [imageError, setImageError] = useState(false)
+    
+    return (
+      <div className={`${className} flex items-center justify-center relative`}>
+        {!imageError ? (
+          <Image 
+            src="/logo-transparent.png"
+            alt="MoneyHero Logo" 
+            width={48}
+            height={48}
+            className="object-contain"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <Scale className="w-full h-full text-yellow-400" />
+        )}
+      </div>
+    )
+  }
 
   // Header Component
   const Header: React.FC<HeaderProps> = ({ darkMode, toggleDarkMode }) => {
@@ -259,131 +238,28 @@ export default function MoneyHeroLanding() {
     </div>
   )
 
-  const ContactForm: React.FC = () => (
-    <Card className="w-full max-w-md mx-auto shadow-2xl border-2 border-yellow-400 bg-card">
-      <CardHeader className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black rounded-t-lg">
-        <CardTitle className="text-center font-bold text-lg sm:text-xl">
-          <span className="inline-block">5분&nbsp;무료&nbsp;진단&nbsp;신청</span>
-        </CardTitle>
-        <CardDescription className="text-center text-gray-800 font-medium text-sm sm:text-base">
-          <span className="inline-block">머니히어로가&nbsp;직접&nbsp;상담해드립니다</span>
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="name" className="text-foreground">이름 *</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
-              required
-              className="bg-background border-border text-foreground"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="phone" className="text-foreground">연락처 *</Label>
-            <Input
-              id="phone"
-              type="tel"
-              value={formData.phone}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
-              required
-              className="bg-background border-border text-foreground"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="amount" className="text-foreground">채권금액</Label>
-            <Select onValueChange={(value: string) => setFormData({ ...formData, amount: value })}>
-              <SelectTrigger className="bg-background border-border text-foreground">
-                <SelectValue placeholder="금액 구간 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="under-500">500만원 미만</SelectItem>
-                <SelectItem value="500-1000">500만원 ~ 1천만원</SelectItem>
-                <SelectItem value="1000-3000">1천만원 ~ 3천만원</SelectItem>
-                <SelectItem value="3000-5000">3천만원 ~ 5천만원</SelectItem>
-                <SelectItem value="over-5000">5천만원 이상</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="counterpartyType" className="text-foreground">상대방 유형</Label>
-            <Select onValueChange={(value: string) => setFormData({ ...formData, counterpartyType: value })}>
-              <SelectTrigger className="bg-background border-border text-foreground">
-                <SelectValue placeholder="선택해주세요" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="individual">개인</SelectItem>
-                <SelectItem value="corporation">법인/사업자</SelectItem>
-                <SelectItem value="unknown">잘 모르겠음</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label htmlFor="reason" className="text-foreground">간단한 사유</Label>
-            <Textarea
-              id="reason"
-              placeholder="예: 거래대금 미지급, 월세 체납, 대여금 미상환 등"
-              value={formData.reason}
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setFormData({ ...formData, reason: e.target.value })}
-              rows={3}
-              className="bg-background border-border text-foreground placeholder-muted-foreground"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="privacy"
-                checked={formData.privacyConsent}
-                onCheckedChange={(checked: boolean) => setFormData({ ...formData, privacyConsent: checked })}
-                required
-                className="border-border"
-              />
-              <Label htmlFor="privacy" className="text-sm text-foreground">
-                개인정보 수집·이용 동의 (필수)
-              </Label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="marketing"
-                checked={formData.marketingConsent}
-                onCheckedChange={(checked: boolean) => setFormData({ ...formData, marketingConsent: checked })}
-                className="border-border"
-              />
-              <Label htmlFor="marketing" className="text-sm text-foreground">
-                마케팅 정보 수신 동의 (선택)
-              </Label>
-            </div>
-          </div>
-
-          <Button type="submit" className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 text-sm sm:text-base">
-            <span className="inline-block">무료&nbsp;진단&nbsp;신청하기</span>
-          </Button>
-
-          <div className="flex gap-2 mt-4">
-            <Button variant="outline" className="flex-1 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black bg-transparent text-xs sm:text-sm">
-              <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              <span className="inline-block">카톡&nbsp;상담</span>
-            </Button>
-            <Button variant="outline" className="flex-1 border-foreground text-foreground hover:bg-foreground hover:text-background bg-transparent text-xs sm:text-sm">
-              <Phone className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              <span className="inline-block">전화&nbsp;상담</span>
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
-  )
-
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300 scroll-smooth">
+      <style jsx global>{`
+        html {
+          scroll-snap-type: y mandatory;
+          scroll-behavior: smooth;
+        }
+        
+        .snap-section {
+          scroll-snap-align: start;
+          scroll-snap-stop: always;
+        }
+        
+        @media (max-width: 768px) {
+          html {
+            scroll-snap-type: none;
+          }
+          .snap-section {
+            scroll-snap-align: none;
+          }
+        }
+      `}</style>
       {/* Header 컴포넌트 불러오기 */}
       <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
 
@@ -405,77 +281,11 @@ export default function MoneyHeroLanding() {
         </div>
       </div>
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-background via-accent/20 to-background py-16 md:py-24 relative overflow-hidden">
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-10 w-2 h-16 bg-yellow-400 transform rotate-12"></div>
-          <div className="absolute top-40 right-20 w-2 h-12 bg-yellow-400 transform -rotate-12"></div>
-          <div className="absolute bottom-40 left-20 w-2 h-20 bg-yellow-400 transform rotate-45"></div>
-          <div className="absolute bottom-20 right-10 w-2 h-14 bg-yellow-400 transform -rotate-45"></div>
-        </div>
-        
-        <div className="container mx-auto px-4 relative">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <Badge className="bg-yellow-400 text-black hover:bg-yellow-400 font-bold px-4 py-2">
-                  <Zap className="w-4 h-4 mr-2" />
-                  오늘 17시 이전 접수 시, 당일 회신
-                </Badge>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-foreground leading-tight">
-                  <span className="inline-block">빼앗긴&nbsp;돈,</span>
-                  <br />
-                  <span className="text-yellow-400 inline-block">빠르게</span>
-                  <br />
-                  <span className="inline-block">되찾아드립니다</span>
-                </h1>
-              </div>
-
-              <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground leading-relaxed font-medium">
-                <span className="inline-block">법의&nbsp;힘으로&nbsp;당신의&nbsp;권리를&nbsp;지키는</span> <span className="text-yellow-400 font-bold inline-block">머니히어로</span>
-              </p>
-
-              <div className="flex flex-wrap gap-4 sm:gap-6 text-sm sm:text-base md:text-lg text-muted-foreground">
-                <div className="flex items-center">
-                  <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 mr-2 sm:mr-3" />
-                  <span className="inline-block">변호사&nbsp;직접&nbsp;수행</span>
-                </div>
-                <div className="flex items-center">
-                  <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 mr-2 sm:mr-3" />
-                  <span className="inline-block">당일&nbsp;가압류&nbsp;진단</span>
-                </div>
-                <div className="flex items-center">
-                  <Star className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 mr-2 sm:mr-3" />
-                  <span className="inline-block">회수율&nbsp;85%</span>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-6 sm:px-8 py-4 sm:py-6 text-lg sm:text-xl">
-                  <span className="inline-block">5분&nbsp;무료&nbsp;진단&nbsp;받기</span>
-                  <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 ml-2 sm:ml-3" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="border-foreground text-foreground hover:bg-foreground hover:text-background px-6 sm:px-8 py-4 sm:py-6 text-lg sm:text-xl bg-transparent"
-                >
-                  <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
-                  <span className="inline-block">카톡으로&nbsp;문의</span>
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex justify-center">
-              <ContactForm />
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Section - 분리된 컴포넌트 사용 */}
+      <HeroSection onFormSubmit={handleHeroFormSubmit} />
 
       {/* Problem Recognition */}
-      <section className="py-16 bg-accent/30">
+      <section className="snap-section py-16 bg-accent/30 min-h-screen flex items-center">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
@@ -506,7 +316,7 @@ export default function MoneyHeroLanding() {
       </section>
 
       {/* 3-Step Process */}
-      <section className="py-16 bg-background">
+      <section className="snap-section py-16 bg-background min-h-screen flex items-center">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
@@ -563,7 +373,7 @@ export default function MoneyHeroLanding() {
       </section>
 
       {/* Success Cases */}
-      <section className="py-16 bg-accent/30">
+      <section className="snap-section py-16 bg-accent/30 min-h-screen flex items-center">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
@@ -627,7 +437,7 @@ export default function MoneyHeroLanding() {
       </section>
 
       {/* Pricing */}
-      <section className="py-16 bg-background">
+      <section className="snap-section py-16 bg-background min-h-screen flex items-center">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
@@ -699,7 +509,7 @@ export default function MoneyHeroLanding() {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 bg-accent/30">
+      <section className="snap-section py-16 bg-accent/30 min-h-screen flex items-center">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
@@ -750,7 +560,7 @@ export default function MoneyHeroLanding() {
       </section>
 
       {/* Lawyer Profile */}
-      <section className="py-16 bg-background">
+      <section className="snap-section py-16 bg-background min-h-screen flex items-center">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
@@ -805,7 +615,7 @@ export default function MoneyHeroLanding() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-16 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black">
+      <section className="snap-section py-16 bg-gradient-to-r from-yellow-400 to-yellow-500 text-black min-h-screen flex items-center">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
             <span className="inline-block">더&nbsp;늦기&nbsp;전에&nbsp;지금&nbsp;시작하세요</span>
