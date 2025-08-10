@@ -100,18 +100,21 @@ export default function FreeDiagnosisModal({ open, setOpen }: { open: boolean, s
               </div>
             </div>
 
+            // FreeDiagnosisModal.tsx에서 채권 금액 선택 부분 수정
+
             <div className="grid gap-2">
-              <Label>채권 금액</Label>
-              <Select name="amount" defaultValue="1천만~3천만">
+            <Label>채권 금액</Label>
+            <Select name="amount" defaultValue="1천만~3천만">
                 <SelectTrigger><SelectValue placeholder="선택" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="~500만원">~500만원</SelectItem>
-                  <SelectItem value="500만~1천만">500만원~1천만원</SelectItem>
-                  <SelectItem value="1천만~3천만">1천만원~3천만원</SelectItem>
-                  <SelectItem value="3천만~5천만">3천만원~5천만원</SelectItem>
-                  <SelectItem value="5천만 이상">5천만원 이상</SelectItem>
+                <SelectItem value="~500만원">~500만원</SelectItem>
+                <SelectItem value="500만~1천만">500만원~1천만원</SelectItem>
+                <SelectItem value="1천만~3천만">1천만원~3천만원</SelectItem>
+                <SelectItem value="3천만~5천만">3천만원~5천만원</SelectItem>
+                <SelectItem value="5천만~1억">5천만원~1억원</SelectItem>
+                <SelectItem value="1억원 이상">1억원 이상</SelectItem>
                 </SelectContent>
-              </Select>
+            </Select>
             </div>
 
             <div className="grid gap-2">
