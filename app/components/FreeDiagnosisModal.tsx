@@ -37,7 +37,7 @@ export default function FreeDiagnosisModal({ open, setOpen }: { open: boolean, s
             }
 
             try {
-              const res = await fetch('/api/consult', {
+              const res = await fetch('/api/quote', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),

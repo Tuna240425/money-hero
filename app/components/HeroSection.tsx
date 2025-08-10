@@ -169,14 +169,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
         
         {/* Left: Text */}
         <div className="text-white space-y-6 max-w-[480px] ml-auto">
-          <Badge className="bg-yellow-400 text-black font-bold px-4 py-2 inline-flex items-center">
-            <Zap className="w-4 h-4 mr-2" />
+          <Badge className="bg-yellow-400 text-black hover:bg-black hover:text-white font-black px-8 py-4 inline-flex items-center text-lg shadow-lg border-2 border-yellow-500 transition-colors duration-300">
+            <Zap className="w-6 h-6 mr-3" />
             오늘 17시 이전 접수 시, 당일 회신
           </Badge>
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight">
             빼앗긴&nbsp;돈,<br />
-            <span className="text-yellow-400">빠르게</span><br />
-            되찾아드립니다
+            <span className="text-yellow-400">빠르게!</span><br />
+            <span className="text-yellow-400">합법적으로!</span>
+            되찾아<br />드립니다
           </h1>
           <p className="text-xl sm:text-2xl md:text-3xl text-white/90">
             법의 힘으로 당신의 권리를 지키는 <span className="text-yellow-400 font-bold">머니히어로</span>
