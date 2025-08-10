@@ -3,7 +3,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
-import puppeteer from 'puppeteer'
+import puppeteer from 'puppeteer-core'
+import chromium from '@sparticuz/chromium'
 
 // 견적서 HTML 생성 함수
 function createQuoteHTML(formData: any, quote: any): string {
@@ -234,12 +235,13 @@ function createQuoteHTML(formData: any, quote: any): string {
   `;
 }
 
-// PDF 생성 함수 (타입 수정)
+// PDF 생성 함수 (Vercel용으로 수정)
 async function generatePDF(htmlContent: string): Promise<Uint8Array> {
   const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
+  args: chromium.args,
+  executablePath: await chromium.executablePath(),
+  headless: true,
+});
   
   const page = await browser.newPage();
   await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
