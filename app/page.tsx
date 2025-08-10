@@ -11,6 +11,8 @@ import {
   TrendingUp, FileText, Gavel, DollarSign, ChevronDown,
 } from "lucide-react"
 import Footer from "./components/Footer"
+import FreeDiagnosisModal from "./components/FreeDiagnosisModal"
+
 
 interface AccordionItemProps {
   question: string
@@ -19,6 +21,8 @@ interface AccordionItemProps {
   onClick: () => void
 }
 
+const [openConsult, setOpenConsult] = useState(false)
+const handleFreeDiagnosis = () => setOpenConsult(true)
 const AccordionItem: React.FC<AccordionItemProps> = ({ question, answer, isOpen, onClick }) => (
   <div className="border border-border rounded-lg bg-card">
     <button 
@@ -590,6 +594,7 @@ export default function MoneyHeroLanding() {
         </div>
       </section>
 
+      <FreeDiagnosisModal open={openConsult} setOpen={setOpenConsult} />
       {/* 푸터 */}
       <Footer />
     </div>

@@ -51,8 +51,8 @@ export default function ProcessPage() {
       title: "사전 상담 및 진단",
       subtitle: "당일 완료",
       icon: Zap,
-      color: "from-yellow-300 via-yellow-400 to-yellow-500",
-      bgColor: "bg-yellow-400/10",
+      color: "from-yellow-600 via-yellow-700 to-yellow-800",
+      bgColor: "bg-yellow-500/10", 
       items: [
         "전화·카톡·온라인 폼으로 사건 접수",
         "채권금액, 상대방 정보, 증거자료 간단 확인", 
@@ -65,7 +65,7 @@ export default function ProcessPage() {
       title: "계약 및 착수",
       subtitle: "1~3일 소요",
       icon: Shield,
-      color: "from-yellow-400 via-yellow-500 to-amber-500", 
+      color: "from-yellow-400 via-yellow-500 to-yellow-600", 
       bgColor: "bg-yellow-500/10",
       items: [
         "변호사 위임계약 체결 (비대면 전자서명 가능)",
@@ -79,8 +79,8 @@ export default function ProcessPage() {
       title: "법적 조치 진행", 
       subtitle: "1~6주 소요",
       icon: Gavel,
-      color: "from-amber-400 via-amber-500 to-orange-400",
-      bgColor: "bg-amber-500/10", 
+      color: "from-yellow-600 via-yellow-700 to-yellow-800",
+      bgColor: "bg-yellow-500/10", 
       items: [
         "내용증명 발송 → 지급명령 신청",
         "필요 시 가압류/가처분 등 보전처분 신청",
@@ -93,8 +93,8 @@ export default function ProcessPage() {
       title: "집행 및 회수",
       subtitle: "완료 시까지", 
       icon: Handshake,
-      color: "from-orange-400 via-orange-500 to-red-400",
-      bgColor: "bg-orange-500/10",
+      color: "from-yellow-400 via-yellow-500 to-yellow-600", 
+      bgColor: "bg-yellow-500/10",
       items: [
         "재산조회, 강제집행, 압류 절차 진행", 
         "합의금 수령 및 정산, 종결 보고서 발송",
@@ -136,7 +136,7 @@ export default function ProcessPage() {
         </div>
       </section>
 
-      {/* 통계 섹션 */}
+      {/* 통계 섹션 
       <section className="container mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -163,10 +163,10 @@ export default function ProcessPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section>*/}
 
       {/* 프로세스 단계 */}
-      <section className="container mx-auto px-4 pb-16">
+      <section className="container mx-auto px-4 pt-16 pb-16">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">

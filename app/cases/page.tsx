@@ -131,12 +131,12 @@ const successCases = [
   }
 ]
 
-const stats = [
+{/* const stats = [
   { icon: TrendingUp, label: "평균 회수율", value: "92%", color: "text-green-600" },
   { icon: Clock, label: "평균 처리기간", value: "6주", color: "text-blue-600" },
   { icon: DollarSign, label: "총 회수금액", value: "156억원", color: "text-purple-600" },
   { icon: Users, label: "성공 사례", value: "1,847건", color: "text-orange-600" }
-]
+]*/}
 
 export default function CasesPage() {
   const [selectedCategory, setSelectedCategory] = useState("all")
@@ -152,7 +152,7 @@ export default function CasesPage() {
       <section 
         className="relative overflow-hidden"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('/cases-hero.jpg')`,
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6)), url('/cases-hero.png')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
@@ -178,7 +178,7 @@ export default function CasesPage() {
         </div>
       </section>
 
-      {/* 통계 섹션 */}
+      {/* 통계 섹션 
       <section className="container mx-auto px-4 py-20">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -195,18 +195,18 @@ export default function CasesPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section>*/}
 
       {/* 카테고리 필터 */}
-      <section className="container mx-auto px-4 pb-8">
+      <section className="container mx-auto px-4 pt-8 pb-8">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+             {/*<h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
               <span className="text-yellow-500">사례별</span> 성공 스토리
             </h2>
             <p className="text-lg text-slate-600">
               카테고리를 선택하여 관련 성공사례를 확인하세요
-            </p>
+            </p> */}
           </div>
           
           <div className="flex flex-wrap justify-center gap-4">
