@@ -39,20 +39,57 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ question, answer, isOpen,
 export default function MoneyHeroLanding() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
 
+  // 연락처 기능들
+  const handlePhoneCall = () => {
+    window.open('tel:02-1234-5678', '_self')
+  }
+
+  const handleKakaoTalk = () => {
+    // 카카오톡 채널 연결 (실제 채널 ID로 변경 필요)
+    window.open('https://pf.kakao.com/_your_channel_id/chat', '_blank')
+  }
+
+  const handleFreeDiagnosis = () => {
+    // 무료 진단 폼으로 스크롤 또는 페이지 이동
+    const consultForm = document.querySelector('#consultation-form')
+    if (consultForm) {
+      consultForm.scrollIntoView({ behavior: 'smooth' })
+    } else {
+      // 별도 페이지로 이동하거나 모달 열기
+      alert('무료 진단 페이지로 이동합니다.')
+    }
+  }
+
+  const handleConsultation = () => {
+    // 상담 신청 처리
+    handleFreeDiagnosis()
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* 모바일 하단 고정 바 */}
       <div className="fixed bottom-0 left-0 right-0 bg-background border-t-2 border-yellow-400 text-foreground p-4 z-40 shadow-lg md:hidden">
         <div className="flex gap-2">
-          <Button className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-xs sm:text-sm">
+          <Button 
+            onClick={handleFreeDiagnosis}
+            className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-bold text-xs sm:text-sm"
+          >
             <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             무료 진단
           </Button>
-          <Button variant="outline" className="flex-1 border-foreground text-foreground hover:bg-foreground hover:text-background bg-transparent text-xs sm:text-sm">
+          <Button 
+            onClick={handlePhoneCall}
+            variant="outline" 
+            className="flex-1 border-foreground text-foreground hover:bg-foreground hover:text-background bg-transparent text-xs sm:text-sm"
+          >
             <Phone className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             전화
           </Button>
-          <Button variant="outline" className="flex-1 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black bg-transparent text-xs sm:text-sm">
+          <Button 
+            onClick={handleKakaoTalk}
+            variant="outline" 
+            className="flex-1 border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black bg-transparent text-xs sm:text-sm"
+          >
             <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
             카톡
           </Button>
@@ -60,10 +97,10 @@ export default function MoneyHeroLanding() {
       </div>
 
       {/* 히어로 */}
-      <HeroSection onFormSubmit={() => {}} />
+      <HeroSection onFormSubmit={handleConsultation} />
 
       {/* 문제 인식 섹션 */}
-      <section className="py-24 md:py-32 bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-yellow-950/30 dark:to-orange-900/20 relative overflow-hidden">
+      <section id="next-section" className="py-24 md:py-32 bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-yellow-950/30 dark:to-orange-900/20 relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 relative">
           <div className="text-center mb-16 md:mb-20">
             <div className="inline-block bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 px-6 py-2 rounded-full text-sm font-bold mb-6">
@@ -357,7 +394,10 @@ export default function MoneyHeroLanding() {
                     <span className="text-foreground">기본 법률 자문</span>
                   </li>
                 </ul>
-                <Button className="w-full mt-6 font-bold bg-foreground hover:bg-foreground/90 text-background">
+                <Button 
+                  onClick={handleConsultation}
+                  className="w-full mt-6 font-bold bg-foreground hover:bg-foreground/90 text-background"
+                >
                   상담 신청
                 </Button>
               </CardContent>
@@ -395,7 +435,10 @@ export default function MoneyHeroLanding() {
                     <span className="text-foreground">진행상황 알림</span>
                   </li>
                 </ul>
-                <Button className="w-full mt-6 font-bold bg-yellow-400 hover:bg-yellow-500 text-black">
+                <Button 
+                  onClick={handleConsultation}
+                  className="w-full mt-6 font-bold bg-yellow-400 hover:bg-yellow-500 text-black"
+                >
                   상담 신청
                 </Button>
               </CardContent>
@@ -430,7 +473,10 @@ export default function MoneyHeroLanding() {
                     <span className="text-foreground">맞춤형 전략</span>
                   </li>
                 </ul>
-                <Button className="w-full mt-6 font-bold bg-foreground hover:bg-foreground/90 text-background">
+                <Button 
+                  onClick={handleConsultation}
+                  className="w-full mt-6 font-bold bg-foreground hover:bg-foreground/90 text-background"
+                >
                   상담 신청
                 </Button>
               </CardContent>
@@ -498,17 +544,28 @@ export default function MoneyHeroLanding() {
             </p>
 
             <div className="flex flex-col lg:flex-row gap-6 justify-center items-center mb-16">
-              <Button className="bg-black hover:bg-gray-800 text-white px-12 py-6 text-xl font-black rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 min-w-[280px]">
+              <Button 
+                onClick={handleFreeDiagnosis}
+                className="bg-black hover:bg-gray-800 text-white px-12 py-6 text-xl font-black rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 min-w-[280px]"
+              >
                 <Clock className="w-6 h-6 mr-3" />
                 5분 무료 진단 시작
               </Button>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button variant="outline" className="border-2 border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg bg-white/90 backdrop-blur-sm font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300">
+                <Button 
+                  onClick={handleKakaoTalk}
+                  variant="outline" 
+                  className="border-2 border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg bg-white/90 backdrop-blur-sm font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                >
                   <MessageCircle className="w-5 h-5 mr-2" />
                   카톡 상담
                 </Button>
-                <Button variant="outline" className="border-2 border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg bg-white/90 backdrop-blur-sm font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300">
+                <Button 
+                  onClick={handlePhoneCall}
+                  variant="outline" 
+                  className="border-2 border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg bg-white/90 backdrop-blur-sm font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                >
                   <Phone className="w-5 h-5 mr-2" />
                   전화 상담
                 </Button>

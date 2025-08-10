@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import { Phone, MessageCircle, ArrowRight, Shield, Zap, Star } from "lucide-react"
+import { Phone, MessageCircle, ArrowRight, Shield, Zap, Star, ChevronDown } from "lucide-react"
 
 interface FormData {
   name: string
@@ -58,6 +58,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     onFormSubmit ? onFormSubmit(formData) : alert("상담 신청이 완료되었습니다. 곧 연락드리겠습니다.")
+  }
+
+  const handleScrollDown = () => {
+    const nextSection = document.querySelector('#next-section')
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth' })
+    }
   }
 
   const ContactForm: React.FC = () => (
@@ -157,8 +164,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
   )
 
   return (
-    <section className="relative min-h-[50vh] flex items-center justify-center bg-black px-4">
-      <div className="container mx-auto px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center">
+    <section className="relative min-h-[80vh] md:min-h-[90vh] flex flex-col items-center justify-center bg-black px-4">
+      <div className="container mx-auto px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center flex-1">
         
         {/* Left: Text */}
         <div className="text-white space-y-6 max-w-[480px] ml-auto">
@@ -166,25 +173,25 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
             <Zap className="w-4 h-4 mr-2" />
             오늘 17시 이전 접수 시, 당일 회신
           </Badge>
-          <h1 className="text-4xl sm:text-5xl font-black leading-tight">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight">
             빼앗긴&nbsp;돈,<br />
             <span className="text-yellow-400">빠르게</span><br />
             되찾아드립니다
           </h1>
-          <p className="text-lg sm:text-xl text-white/90">
+          <p className="text-xl sm:text-2xl md:text-3xl text-white/90">
             법의 힘으로 당신의 권리를 지키는 <span className="text-yellow-400 font-bold">머니히어로</span>
           </p>
-          <div className="flex flex-wrap gap-4 text-white/90">
-            <div className="flex items-center"><Shield className="w-5 h-5 text-yellow-400 mr-2" />변호사 직접 수행</div>
-            <div className="flex items-center"><Zap className="w-5 h-5 text-yellow-400 mr-2" />당일 가압류 진단</div>
-            <div className="flex items-center"><Star className="w-5 h-5 text-yellow-400 mr-2" />회수율 85%</div>
+          <div className="flex flex-wrap gap-4 text-lg text-white/90">
+            <div className="flex items-center"><Shield className="w-6 h-6 text-yellow-400 mr-2" />변호사 직접 수행</div>
+            <div className="flex items-center"><Zap className="w-6 h-6 text-yellow-400 mr-2" />당일 가압류 진단</div>
+            <div className="flex items-center"><Star className="w-6 h-6 text-yellow-400 mr-2" />회수율 85%</div>
           </div>
         </div>
 
         {/* Right: Video */}
         <div className="flex justify-center">
           <div className="rounded-full overflow-hidden border-4 border-yellow-400 shadow-lg"
-              style={{ width: "300px", height: "300px" }}>
+              style={{ width: "320px", height: "320px" }}>
             <video
               ref={videoRef}
               src="/video.mp4"
@@ -195,6 +202,18 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
             />
           </div>
         </div>
+      </div>
+
+      {/* Scroll Down Button */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <Button
+          onClick={handleScrollDown}
+          variant="ghost"
+          size="lg"
+          className="text-white hover:text-yellow-400 hover:bg-white/10 rounded-full p-4 transition-all duration-300"
+        >
+          <ChevronDown className="w-8 h-8" />
+        </Button>
       </div>
 
     </section>
