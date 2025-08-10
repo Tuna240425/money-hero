@@ -13,7 +13,6 @@ import {
 import Footer from "./components/Footer"
 import FreeDiagnosisModal from "./components/FreeDiagnosisModal"
 
-
 interface AccordionItemProps {
   question: string
   answer: string
@@ -21,8 +20,6 @@ interface AccordionItemProps {
   onClick: () => void
 }
 
-const [openConsult, setOpenConsult] = useState(false)
-const handleFreeDiagnosis = () => setOpenConsult(true)
 const AccordionItem: React.FC<AccordionItemProps> = ({ question, answer, isOpen, onClick }) => (
   <div className="border border-border rounded-lg bg-card">
     <button 
@@ -42,6 +39,7 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ question, answer, isOpen,
 
 export default function MoneyHeroLanding() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [openConsult, setOpenConsult] = useState(false)
 
   // 연락처 기능들
   const handlePhoneCall = () => {
@@ -54,14 +52,7 @@ export default function MoneyHeroLanding() {
   }
 
   const handleFreeDiagnosis = () => {
-    // 무료 진단 폼으로 스크롤 또는 페이지 이동
-    const consultForm = document.querySelector('#consultation-form')
-    if (consultForm) {
-      consultForm.scrollIntoView({ behavior: 'smooth' })
-    } else {
-      // 별도 페이지로 이동하거나 모달 열기
-      alert('무료 진단 페이지로 이동합니다.')
-    }
+    setOpenConsult(true)
   }
 
   const handleConsultation = () => {
