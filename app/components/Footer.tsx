@@ -1,53 +1,41 @@
+// app/components/Footer.tsx
 import React from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 
-interface RabbitHeroLogoProps {
-  className?: string;
+interface NavigationItem {
+  label: string
+  href: string
+  analytics: string
 }
 
-const RabbitHeroLogo: React.FC<RabbitHeroLogoProps> = ({ className = "w-12 h-12" }) => (
-  <div className={`${className} flex items-center justify-center`}>
-    <svg viewBox="0 0 100 100" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g stroke="#FFD700" strokeWidth="2" strokeLinecap="round">
-        <line x1="5" y1="30" x2="15" y2="30" opacity="0.6" />
-        <line x1="8" y1="40" x2="18" y2="40" opacity="0.4" />
-        <line x1="3" y1="50" x2="13" y2="50" opacity="0.6" />
-        <line x1="6" y1="60" x2="16" y2="60" opacity="0.4" />
-      </g>
-      
-      <ellipse cx="50" cy="65" rx="18" ry="25" stroke="#FFD700" strokeWidth="3" fill="none" />
-      <circle cx="50" cy="40" r="15" stroke="#FFD700" strokeWidth="3" fill="none" />
-      
-      <ellipse cx="42" cy="25" rx="4" ry="12" stroke="#FFD700" strokeWidth="3" fill="none" transform="rotate(-15 42 25)" />
-      <ellipse cx="58" cy="25" rx="4" ry="12" stroke="#FFD700" strokeWidth="3" fill="none" transform="rotate(15 58 25)" />
-      
-      <path d="M40 35 Q45 32 50 35 Q55 32 60 35 L58 42 Q50 45 42 42 Z" stroke="#FFD700" strokeWidth="2" fill="none" />
-      
-      <circle cx="45" cy="38" r="2" fill="#FFD700" />
-      <circle cx="55" cy="38" r="2" fill="#FFD700" />
-      
-      <g stroke="#FFD700" strokeWidth="2.5" strokeLinecap="round">
-        <line x1="70" y1="55" x2="75" y2="50" />
-        <rect x="73" y="47" width="6" height="3" rx="1" fill="#FFD700" />
-        <line x1="68" y1="57" x2="72" y2="53" />
-      </g>
-      
-      <path d="M35 55 Q30 60 32 75 Q40 80 45 75 L45 65" stroke="#FFD700" strokeWidth="2" fill="none" />
-      
-      <ellipse cx="44" cy="85" rx="3" ry="8" stroke="#FFD700" strokeWidth="2" fill="none" />
-      <ellipse cx="56" cy="85" rx="3" ry="8" stroke="#FFD700" strokeWidth="2" fill="none" />
-    </svg>
-  </div>
-)
+const navigationItems: NavigationItem[] = [
+  { label: '절차 안내', href: '/process', analytics: 'footer_nav_process' },
+  { label: '이용 요금', href: '/pricing', analytics: 'footer_nav_pricing' },
+  { label: '성공 사례', href: '/cases', analytics: 'footer_nav_cases' },
+  { label: '회사 소개', href: '/about', analytics: 'footer_nav_about' },
+]
 
 const Footer: React.FC = () => {
   return (
     <footer className="bg-background text-foreground py-16 md:py-20 border-t border-border">
-      <div className="container mx-auto px-4">
+      {/* 👉 헤더와 동일한 컨테이너 규격 */}
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* 브랜드 + 소개 */}
           <div>
-            <div className="flex items-center space-x-3 mb-4">
-              <RabbitHeroLogo className="w-8 h-8" />
-              <span className="text-xl font-bold">Money<span className="text-yellow-400">Hero</span></span>
+            <div className="flex items-center gap-3 mb-4">
+              <Image
+                src="/logo-transparent.png"
+                alt="MoneyHero 로고"
+                width={36}
+                height={36}
+                className="h-9 w-auto"
+                priority
+              />
+              <span className="text-xl font-bold">
+                Money<span className="text-yellow-400">Hero</span>
+              </span>
             </div>
             <p className="text-muted-foreground">
               변호사가 직접 처리하는
@@ -56,6 +44,24 @@ const Footer: React.FC = () => {
             </p>
           </div>
 
+          {/* 바로가기 */}
+          <div>
+            <h4 className="font-bold mb-4 text-yellow-400">바로가기</h4>
+            <nav className="flex flex-col space-y-2">
+              {navigationItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="text-sm text-muted-foreground hover:text-yellow-400 transition-colors"
+                  data-analytics={item.analytics}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          {/* 로펌 정보 */}
           <div>
             <h4 className="font-bold mb-4 text-yellow-400">로펌 정보</h4>
             <div className="space-y-2 text-muted-foreground">
@@ -65,6 +71,7 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
+          {/* 연락처 / 법적 고지 */}
           <div>
             <h4 className="font-bold mb-4 text-yellow-400">연락처</h4>
             <div className="space-y-2 text-muted-foreground">
@@ -72,21 +79,21 @@ const Footer: React.FC = () => {
               <p>이메일: info@moneyhero.co.kr</p>
               <p>주소: 서울특별시 송파구 법원로92, 806호(문정동, 파트너스1)</p>
             </div>
-          </div>
 
-          <div>
-            <h4 className="font-bold mb-4 text-yellow-400">법적 고지</h4>
-            <div className="space-y-2 text-muted-foreground">
-              <p>본 페이지는 변호사 광고입니다.</p>
-              <a href="#" className="hover:text-yellow-400 transition-colors">
-                개인정보처리방침
-              </a>
+            <div className="mt-6">
+              <h5 className="font-semibold mb-2 text-yellow-400">법적 고지</h5>
+              <div className="space-y-2 text-muted-foreground">
+                <p>본 페이지는 변호사 광고입니다.</p>
+                <Link href="/privacy" className="hover:text-yellow-400 transition-colors">
+                  개인정보처리방침
+                </Link>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="border-t border-border mt-8 pt-8 text-center text-muted-foreground">
-          <p>&copy; 2024 MoneyHero. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} MoneyHero. All rights reserved.</p>
         </div>
       </div>
     </footer>

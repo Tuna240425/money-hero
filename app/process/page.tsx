@@ -10,6 +10,9 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { Zap, Shield, Gavel, Handshake, Mail } from 'lucide-react'
+import Footer from '../components/Footer'
+
+
 
 type FormData = {
   role: '채권자' | '채무자' | ''
@@ -47,93 +50,104 @@ export default function ProcessPage() {
   return (
     <main className="min-h-screen bg-background text-foreground">
       {/* 인트로 */}
-      <section className="container mx-auto px-4 pt-10 md:pt-14 pb-6">
-        <div className="max-w-3xl">
-          <Badge className="bg-yellow-400 text-black font-bold mb-3">비대면 채권추심 진행 과정</Badge>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
+      <section className="container mx-auto px-4 pt-16 md:pt-24 pb-6 text-center">
+        <div className="max-w-3xl mx-auto">
+            <Badge className="bg-yellow-400 text-black font-bold mb-3">
+            비대면 채권추심 진행 과정
+            </Badge>
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">
             서류 준비부터 회수까지,<br className="hidden sm:block" /> 한 번의 의뢰로 끝냅니다.
-          </h1>
-          <p className="mt-3 text-muted-foreground">
+            </h1>
+            <p className="mt-3 text-muted-foreground">
             사건 접수 → 진단 → 법적 조치 → 집행/회수까지 단계별로 투명하게 안내드립니다.
-          </p>
+            </p>
         </div>
-      </section>
+        </section>
+
 
       {/* 카드형 절차 요약 */}
       <section className="container mx-auto px-4 pb-12">
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* A */}
-          <Card className="bg-card border-border rounded-2xl shadow-sm">
+        <div className="max-w-3xl mx-auto grid grid-cols-1 gap-6">
+            {/* A */}
+            <Card className="bg-card border-border rounded-2xl shadow-sm">
             <CardContent className="p-8">
-              <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-4">
                 <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-yellow-400/20">
-                  <Zap className="w-6 h-6 text-yellow-400" />
+                    <Zap className="w-6 h-6 text-yellow-400" />
                 </div>
-                <h3 className="font-bold text-lg">가. 사전 상담 및 진단 (당일)</h3>
-              </div>
-              <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
+                <h3 className="font-bold text-lg">
+                    <span className="text-yellow-400">가.</span> 사전 상담 및 진단 (당일)
+                </h3>
+                </div>
+                <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
                 <li>전화·카톡·온라인 폼으로 사건 접수</li>
                 <li>채권금액, 상대방 정보, 증거자료 간단 확인</li>
                 <li>보전조치(가압류) 필요성·가능 여부 안내</li>
                 <li>추심 가능성 및 예상 소요기간 무료 진단</li>
-              </ul>
+                </ul>
             </CardContent>
-          </Card>
+            </Card>
 
-          {/* B */}
-          <Card className="bg-card border-border rounded-2xl shadow-sm">
+            {/* B */}
+            <Card className="bg-card border-border rounded-2xl shadow-sm">
             <CardContent className="p-8">
-              <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-4">
                 <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-yellow-400/20">
-                  <Shield className="w-6 h-6 text-yellow-400" />
+                    <Shield className="w-6 h-6 text-yellow-400" />
                 </div>
-                <h3 className="font-bold text-lg">나. 계약 및 착수 (1~3일)</h3>
-              </div>
-              <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
+                <h3 className="font-bold text-lg">
+                    <span className="text-yellow-400">나.</span> 계약 및 착수 (1~3일)
+                </h3>
+                </div>
+                <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
                 <li>변호사 위임계약 체결 (비대면 전자서명 가능)</li>
                 <li>사건 유형·난이도별 착수금 확정 및 견적서 발송</li>
                 <li>자료 정리 및 법적 절차 준비</li>
                 <li>공정한 채권추심법 준수한 추심 계획 수립</li>
-              </ul>
+                </ul>
             </CardContent>
-          </Card>
+            </Card>
 
-          {/* C */}
-          <Card className="bg-card border-border rounded-2xl shadow-sm">
+            {/* C */}
+            <Card className="bg-card border-border rounded-2xl shadow-sm">
             <CardContent className="p-8">
-              <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-4">
                 <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-yellow-400/20">
-                  <Gavel className="w-6 h-6 text-yellow-400" />
+                    <Gavel className="w-6 h-6 text-yellow-400" />
                 </div>
-                <h3 className="font-bold text-lg">다. 법적 조치 진행 (1~6주)</h3>
-              </div>
-              <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
+                <h3 className="font-bold text-lg">
+                    <span className="text-yellow-400">다.</span> 법적 조치 진행 (1~6주)
+                </h3>
+                </div>
+                <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
                 <li>내용증명 발송 → 지급명령 신청</li>
                 <li>필요 시 가압류/가처분 등 보전처분 신청</li>
                 <li>본안소송(필요 시) 진행</li>
                 <li>진행 상황 카톡/문자로 실시간 안내</li>
-              </ul>
+                </ul>
             </CardContent>
-          </Card>
+            </Card>
 
-          {/* D */}
-          <Card className="bg-card border-border rounded-2xl shadow-sm">
+            {/* D */}
+            <Card className="bg-card border-border rounded-2xl shadow-sm">
             <CardContent className="p-8">
-              <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-3 mb-4">
                 <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-yellow-400/20">
-                  <Handshake className="w-6 h-6 text-yellow-400" />
+                    <Handshake className="w-6 h-6 text-yellow-400" />
                 </div>
-                <h3 className="font-bold text-lg">라. 집행 및 회수 (완료 시)</h3>
-              </div>
-              <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
+                <h3 className="font-bold text-lg">
+                    <span className="text-yellow-400">라.</span> 집행 및 회수 (완료 시)
+                </h3>
+                </div>
+                <ul className="space-y-3 text-sm text-muted-foreground leading-relaxed">
                 <li>재산조회, 강제집행, 압류 절차 진행</li>
                 <li>합의금 수령 및 정산, 종결 보고서 발송</li>
                 <li>미회수 시 채무자 재산상황 정기 모니터링 제공</li>
-              </ul>
+                </ul>
             </CardContent>
-          </Card>
+            </Card>
         </div>
-      </section>
+        </section>
 
       {/* 견적/문의 폼 (그대로) */}
       <section id="quote" className="container mx-auto px-4 pb-24">
@@ -227,6 +241,8 @@ export default function ProcessPage() {
           </CardContent>
         </Card>
       </section>
+        {/* 푸터 */}
+        <Footer />
     </main>
   )
 }
