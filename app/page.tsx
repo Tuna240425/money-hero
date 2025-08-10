@@ -1,5 +1,5 @@
 // app/page.tsx
-'use client'
+"use client"
 
 import React, { useState } from "react"
 import HeroSection from "./components/HeroSection"
