@@ -1,16 +1,15 @@
-// 이 파일은 서버 전용입니다. 클라이언트에서 import 하지 마세요.
-import { cert, getApps, initializeApp } from 'firebase-admin/app'
-import { getFirestore } from 'firebase-admin/firestore'
+// 서버 전용: 클라이언트에서 import 금지
+import admin from 'firebase-admin'
 
-const apps = getApps()
-if (!apps.length) {
-  initializeApp({
-    credential: cert({
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
       privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    }),
+    } as admin.ServiceAccount),
   })
 }
 
-export const db = getFirestore()
+// ✅ 서브패스('firebase-admin/firestore') 대신 최상위에서 firestore 사용
+export const db = admin.firestore()
