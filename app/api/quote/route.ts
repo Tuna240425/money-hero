@@ -128,6 +128,106 @@ async function saveToNotion(formData: any, quoteData: any) {
   }
 }
 
+// 채무자 문의 처리 함수
+async function handleDebtorInquiry(formData: any) {
+  console.log('=== 채무자 문의 처리 ===');
+  
+  const envCheck = {
+    SMTP_HOST: !!process.env.SMTP_HOST,
+    SMTP_USER: !!process.env.SMTP_USER,
+    SMTP_PASS: !!process.env.SMTP_PASS,
+    MAIL_TO: !!process.env.MAIL_TO,
+    MAIL_FROM: !!process.env.MAIL_FROM
+  };
+  console.log('환경변수 상태:', envCheck);
+
+  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.error('SMTP 환경변수 누락 - 이메일 발송 불가');
+    return { emailSent: false, reason: 'SMTP 설정 누락' };
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT || 587),
+      secure: process.env.SMTP_PORT === '465',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+
+    await transporter.verify();
+    console.log('SMTP 연결 성공');
+
+    const toOps = process.env.MAIL_TO || 'ops@example.com';
+    const fromAddr = process.env.MAIL_FROM || 'noreply@moneyhero.co.kr';
+
+    // 관리자에게 채무자 문의 알림
+    await transporter.sendMail({
+      from: fromAddr,
+      to: toOps,
+      subject: `🔔 [채무자 문의] ${formData.name} | ${formData.amount} | 서비스 준비중`,
+      html: `
+        <div style="font-family: system-ui; line-height: 1.6; max-width: 600px;">
+          <h2 style="color: #dc2626;">🔔 채무자 서비스 문의</h2>
+          
+          <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #f59e0b;">
+            <strong>⚠️ 현재 채무자 서비스는 준비중입니다</strong><br>
+            개별 연락이 필요한 문의입니다.
+          </div>
+          
+          <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr style="background: #f3f4f6;">
+              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">이름</td>
+              <td style="padding: 10px; border: 1px solid #d1d5db;">${formData.name}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">연락처</td>
+              <td style="padding: 10px; border: 1px solid #d1d5db;">${formData.phone}</td>
+            </tr>
+            <tr style="background: #f3f4f6;">
+              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">이메일</td>
+              <td style="padding: 10px; border: 1px solid #d1d5db;">${formData.email}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">구분</td>
+              <td style="padding: 10px; border: 1px solid #d1d5db; color: #dc2626; font-weight: bold;">${formData.role}</td>
+            </tr>
+            <tr style="background: #f3f4f6;">
+              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">상대방</td>
+              <td style="padding: 10px; border: 1px solid #d1d5db;">${formData.counterparty}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">채권금액</td>
+              <td style="padding: 10px; border: 1px solid #d1d5db; color: #dc2626; font-weight: bold;">${formData.amount}</td>
+            </tr>
+          </table>
+
+          ${formData.summary ? `
+          <h3>📝 문의내용:</h3>
+          <div style="background: #f9fafb; padding: 15px; border-radius: 8px; border-left: 4px solid #6b7280;">
+            ${formData.summary.replace(/\n/g, '<br>')}
+          </div>
+          ` : ''}
+          
+          <p style="margin-top: 20px; padding: 15px; background: #dbeafe; border-radius: 8px;">
+            💡 <strong>할 일:</strong> 24시간 내 ${formData.phone}로 연락하여 채무자 서비스 일정 안내<br>
+            📅 <strong>접수시간:</strong> ${new Date().toLocaleString('ko-KR')}
+          </p>
+        </div>
+      `,
+    });
+
+    console.log('채무자 문의 관리자 알림 발송 성공');
+    return { emailSent: true };
+
+  } catch (error) {
+    console.error('채무자 문의 이메일 발송 실패:', error);
+    return { emailSent: false, reason: error instanceof Error ? error.message : String(error) };
+  }
+}
+
 // 매트릭스 견적 계산 함수 (기존과 동일)
 function calculateMatrixQuote(amount: string, counterparty: string, role: string) {
   // 기본 착수금 (스탠다드 기준)
@@ -241,7 +341,7 @@ function calculateMatrixQuote(amount: string, counterparty: string, role: string
     ]
   });
   
-  // 3. 집행패키지
+  // 3. 패키지
   const executionFee = isIndividualQuote ? 0 : Math.round(baseFee * 1.5 * multiplier);
   const executionFeeDisplay = isIndividualQuote ? "개별 견적" : `${executionFee}만원`;
   const executionCreditorRange = [
@@ -254,7 +354,7 @@ function calculateMatrixQuote(amount: string, counterparty: string, role: string
   ];
   
   packages.push({
-    name: "집행패키지",
+    name: "패키지",
     description: "가압류 + 강제집행 중심",
     fee: executionFee,
     feeDisplay: executionFeeDisplay,
@@ -521,7 +621,22 @@ export async function POST(req: NextRequest) {
     }
     console.log('필수 필드 검증 통과');
 
-    // 4. 매트릭스 견적 계산
+    // 4. 채무자 서비스 체크 (새로 추가)
+    if (body.role === '채무자') {
+      console.log('채무자 서비스 요청 - 준비중 안내');
+      
+      const debtorResult = await handleDebtorInquiry(body);
+      
+      return NextResponse.json({ 
+        error: '채무자 서비스 준비중',
+        message: '채무자를 위한 서비스는 현재 준비 중입니다. 담당자가 빠른 시일 내 연락드리겠습니다.',
+        debtorService: true,
+        emailSent: debtorResult.emailSent,
+        details: debtorResult.reason
+      }, { status: 200 }); // 200으로 변경 (성공적인 처리)
+    }
+
+    // 5. 매트릭스 견적 계산 (채권자만)
     const quoteData = calculateMatrixQuote(body.amount, body.counterparty, body.role);
     console.log('매트릭스 견적 계산 완료:', {
       quoteNumber: quoteData.quoteNumber,
@@ -529,7 +644,7 @@ export async function POST(req: NextRequest) {
       packagesCount: quoteData.packages.length
     });
 
-    // 5. 노션 데이터베이스 저장 시도
+    // 6. 노션 데이터베이스 저장 시도
     let notionResult = null;
     try {
       notionResult = await saveToNotion(body, quoteData);
@@ -541,7 +656,7 @@ export async function POST(req: NextRequest) {
       // 노션 저장 실패해도 이메일은 계속 진행
     }
 
-    // 6. 환경변수 확인
+    // 7. 환경변수 확인
     const envCheck = {
       SMTP_HOST: !!process.env.SMTP_HOST,
       SMTP_USER: !!process.env.SMTP_USER,
@@ -561,7 +676,7 @@ export async function POST(req: NextRequest) {
       }, { status: 500 });
     }
 
-    // 7. SMTP 설정
+    // 8. SMTP 설정
     console.log('SMTP 설정 시작');
     let transporter;
     try {
@@ -583,7 +698,7 @@ export async function POST(req: NextRequest) {
       }, { status: 500 });
     }
 
-    // 8. SMTP 연결 테스트
+    // 9. SMTP 연결 테스트
     console.log('SMTP 연결 테스트 시작');
     try {
       await transporter.verify();
@@ -599,7 +714,7 @@ export async function POST(req: NextRequest) {
     const toOps = process.env.MAIL_TO || 'ops@example.com';
     const fromAddr = process.env.MAIL_FROM || 'noreply@moneyhero.co.kr';
 
-    // 9. 관리자 메일 발송 (간단 버전)
+    // 10. 관리자 메일 발송 (간단 버전)
     console.log('관리자 메일 발송 시작');
     try {
       const recommendedPackage = quoteData.packages[1]; // 스탠다드 패키지
@@ -685,7 +800,7 @@ export async function POST(req: NextRequest) {
       }, { status: 500 });
     }
 
-    // 10. 고객 매트릭스 견적 메일 발송
+    // 11. 고객 매트릭스 견적 메일 발송
     console.log('고객 매트릭스 견적 메일 발송 시작');
     try {
       const matrixEmailHTML = createMatrixQuoteEmailHTML(body, quoteData);

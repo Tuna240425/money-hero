@@ -367,8 +367,8 @@ export default function MoneyHeroLanding() {
             <Card className="relative bg-card border-border">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl text-foreground">스타트</CardTitle>
-                <div className="text-3xl font-black text-yellow-400">₩0 + 성공보수</div>
-                <CardDescription className="text-muted-foreground text-lg">초기자문/내용증명, 회수 시 성공보수 X%</CardDescription>
+                <div className="text-3xl font-black text-yellow-400">0원 + 성공보수</div>
+                <CardDescription className="text-muted-foreground text-lg">초기자문/내용증명, 회수 시 성공보수 부과</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-4">
@@ -382,7 +382,7 @@ export default function MoneyHeroLanding() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-yellow-400 mr-4 flex-shrink-0" />
-                    <span className="text-foreground">성공 시에만 보수</span>
+                    <span className="text-foreground">성공 시에만 보수 부과</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-yellow-400 mr-4 flex-shrink-0" />
@@ -400,11 +400,13 @@ export default function MoneyHeroLanding() {
 
             <Card className="relative bg-card border-2 border-yellow-400 shadow-2xl scale-105">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <Badge className="bg-yellow-400 text-black px-6 py-2 font-bold text-lg">추천</Badge>
+                <Badge className="bg-yellow-400 text-black px-6 py-2 font-bold text-lg hover:bg-black hover:text-white transition-colors duration-200">
+                  추천
+                </Badge>
               </div>
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl text-foreground">스탠다드</CardTitle>
-                <div className="text-3xl font-black text-yellow-400">정액 + 보수↓</div>
+                <div className="text-3xl font-black text-yellow-400">착수금 정액 + 성공보수 할인</div>
                 <CardDescription className="text-muted-foreground text-lg">지급명령·소송대리 포함</CardDescription>
               </CardHeader>
               <CardContent>
@@ -441,8 +443,8 @@ export default function MoneyHeroLanding() {
 
             <Card className="relative bg-card border-border">
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl text-foreground">집행패키지</CardTitle>
-                <div className="text-3xl font-black text-yellow-400">견적형</div>
+                <CardTitle className="text-2xl text-foreground">패키지</CardTitle>
+                <div className="text-3xl font-black text-yellow-400">별도 견적형</div>
                 <CardDescription className="text-muted-foreground text-lg">가압류·강제집행 중심</CardDescription>
               </CardHeader>
               <CardContent>

@@ -38,7 +38,7 @@ const Footer: React.FC = () => {
             <h4 className="font-bold mb-4 text-yellow-400">사업자 정보</h4>
             <div className="space-y-2 text-muted-foreground text-sm">
               <p>대표변호사: 임성호, 이한나</p>
-              <p>사업자등록번호: 123-45-67890</p>
+              <p>사업자등록번호: 654-39-00409</p>
               <p>임앤리 법률사무소 (머니히어로)</p>
             </div>
           </div>
@@ -48,7 +48,7 @@ const Footer: React.FC = () => {
             <h4 className="font-bold mb-4 text-yellow-400">연락처</h4>
             <div className="space-y-2 text-muted-foreground text-sm">
               <p>전화: 02-3477-9650</p>
-              <p>이메일: Link95605312@gmail.com</p>
+              <p>이메일: moneyhero.service@gmail.com </p>
               <p>주소: 서울특별시 송파구 법원로92, 806호(문정동, 파트너스1)</p>
             </div>
           </div>
