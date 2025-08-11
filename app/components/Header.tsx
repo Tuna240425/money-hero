@@ -262,7 +262,7 @@ export default function Header() {
                 onClick={() => setOpen(false)}
                 data-analytics="nav_cta_mobile"
               >
-                무료 진단
+                전화 상담
               </Link>
             </div>
           </div>

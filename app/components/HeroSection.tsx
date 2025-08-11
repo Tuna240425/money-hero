@@ -164,35 +164,46 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
   )
 
   return (
-    <section className="relative min-h-[80vh] md:min-h-[90vh] flex flex-col items-center justify-center bg-black px-4">
-      <div className="container mx-auto px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center flex-1">
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-black px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-6 lg:gap-8 items-center flex-1 max-w-7xl">
         
         {/* Left: Text */}
-        <div className="text-white space-y-6 max-w-[480px] ml-auto">
-          <Badge className="bg-yellow-400 text-black hover:bg-black hover:text-white font-black px-8 py-4 inline-flex items-center text-lg shadow-lg border-2 border-yellow-500 transition-colors duration-300">
-            <Zap className="w-6 h-6 mr-3" />
-            오늘 17시 이전 접수 시, 당일 회신
+        <div className="text-white space-y-3 sm:space-y-4 md:space-y-6 max-w-[480px] mx-auto md:ml-auto md:mr-0">
+          <Badge className="bg-yellow-400 text-black hover:bg-black hover:text-white font-black px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 inline-flex items-center text-sm sm:text-base lg:text-lg shadow-lg border-2 border-yellow-500 transition-colors duration-300">
+            <Zap className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2 sm:mr-3" />
+            <span className="text-xs sm:text-sm lg:text-base">오늘 17시 이전 접수 시, 당일 회신</span>
           </Badge>
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight">
+          
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight">
             빼앗긴&nbsp;돈,<br />
             <span className="text-yellow-400">빠르게!</span><br />
-            <span className="text-yellow-400">합법적으로!</span>
-            되찾아<br />드립니다
+            <span className="text-yellow-400">합법적으로!</span><br />
+            되찾아드립니다
           </h1>
-          <p className="text-xl sm:text-2xl md:text-3xl text-white/90">
+          
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 leading-relaxed">
             법의 힘으로 당신의 권리를 지키는 <span className="text-yellow-400 font-bold">머니히어로</span>
           </p>
-          <div className="flex flex-wrap gap-4 text-lg text-white/90">
-            <div className="flex items-center"><Shield className="w-6 h-6 text-yellow-400 mr-2" />변호사 직접 수행</div>
-            <div className="flex items-center"><Zap className="w-6 h-6 text-yellow-400 mr-2" />당일 가압류 진단</div>
-            <div className="flex items-center"><Star className="w-6 h-6 text-yellow-400 mr-2" />회수율 85%</div>
+          
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 text-sm sm:text-base lg:text-lg text-white/90">
+            <div className="flex items-center">
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-400 mr-2 flex-shrink-0" />
+              <span>변호사 직접 수행</span>
+            </div>
+            <div className="flex items-center">
+              <Zap className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-400 mr-2 flex-shrink-0" />
+              <span>당일 가압류 진단</span>
+            </div>
+            <div className="flex items-center">
+              <Star className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-400 mr-2 flex-shrink-0" />
+              <span>회수율 85%</span>
+            </div>
           </div>
         </div>
 
         {/* Right: Video */}
-        <div className="flex justify-center">
-          <div className="rounded-full overflow-hidden border-4 border-yellow-400 shadow-lg"
-              style={{ width: "320px", height: "320px" }}>
+        <div className="flex justify-center order-first md:order-last">
+          <div className="rounded-full overflow-hidden border-4 border-yellow-400 shadow-lg w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 lg:w-80 lg:h-80">
             <video
               ref={videoRef}
               src="/video.mp4"
@@ -206,19 +217,18 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
       </div>
 
       {/* Scroll Down Button */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+      <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
         <Button
           onClick={handleScrollDown}
           variant="ghost"
           size="lg"
-          className="text-white hover:text-yellow-400 hover:bg-white/10 rounded-full p-4 transition-all duration-300"
+          className="text-white hover:text-yellow-400 hover:bg-white/10 rounded-full p-3 sm:p-4 transition-all duration-300"
         >
-          <ChevronDown className="w-8 h-8" />
+          <ChevronDown className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
         </Button>
       </div>
 
     </section>
-
   )
 }
 
