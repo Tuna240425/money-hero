@@ -300,8 +300,11 @@ export default function ProcessPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="채권자">채권자</SelectItem>
-                      <SelectItem value="채무자">채무자</SelectItem>
+                      <SelectItem value="채무자" disabled>
+                        채무자 (서비스 준비 중)
+                      </SelectItem>
                     </SelectContent>
+
                   </Select>
                 </div>
                 <div className="space-y-2">
