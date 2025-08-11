@@ -477,11 +477,11 @@ function createMatrixQuoteEmailHTML(formData: any, quoteData: any): string {
         
         <div class="contact-info">
             <h3 style="margin: 0 0 15px 0; color: #fbbf24;">📞 연락처</h3>
-            <p style="margin: 5px 0; font-size: 18px;"><strong>02-1234-5678</strong></p>
+            <p style="margin: 5px 0; font-size: 18px;"><strong>02-3477-9650</strong></p>
             <p style="margin: 5px 0;">평일 09:00-18:00 | 카카오톡 @머니히어로</p>
             <p style="margin: 15px 0 5px 0; font-size: 12px; opacity: 0.8;">
-                © 2025 머니히어로. 모든 권리 보유.<br>
-                사업자등록번호: 123-45-67890 | 발급일: ${new Date().toLocaleDateString('ko-KR')}
+                © 2025 머니히어로 | 임앤리 법률사무소. 모든 권리 보유.<br>
+                사업자등록번호: 654-39-00409 | 발급일: ${new Date().toLocaleDateString('ko-KR')}
             </p>
         </div>
     </div>

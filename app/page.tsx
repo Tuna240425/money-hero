@@ -43,12 +43,12 @@ export default function MoneyHeroLanding() {
 
   // 연락처 기능들
   const handlePhoneCall = () => {
-    window.open('tel:02-1234-5678', '_self')
+    window.open('tel:02-3477-9650', '_self')
   }
 
   const handleKakaoTalk = () => {
-    // 카카오톡 채널 연결 (실제 채널 ID로 변경 필요)
-    window.open('https://pf.kakao.com/_your_channel_id/chat', '_blank')
+    // 카카오톡 채널 연결
+    window.open('https://open.kakao.com/o/sCiUMULh', '_blank')
   }
 
   const handleFreeDiagnosis = () => {
