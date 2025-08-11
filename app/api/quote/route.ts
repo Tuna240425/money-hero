@@ -2,7 +2,133 @@
 import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
 
-// 매트릭스 견적 계산 함수 (채권금액별 × 서비스패키지별)
+// 노션 API 연동 함수
+async function saveToNotion(formData: any, quoteData: any) {
+  const notionToken = process.env.NOTION_TOKEN;
+  const notionDatabaseId = process.env.NOTION_DATABASE_ID;
+
+  if (!notionToken || !notionDatabaseId) {
+    console.log('노션 환경변수 누락 - 노션 저장 건너뜀');
+    return null;
+  }
+
+  try {
+    console.log('노션 데이터베이스 저장 시작');
+    
+    // 추천 패키지 정보
+    const recommendedPackage = quoteData.packages[1]; // 스탠다드 패키지
+    
+    const response = await fetch('https://api.notion.com/v1/pages', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${notionToken}`,
+        'Content-Type': 'application/json',
+        'Notion-Version': '2022-06-28'
+      },
+      body: JSON.stringify({
+        parent: {
+          database_id: notionDatabaseId
+        },
+        properties: {
+          // 이름 (title 타입)
+          "이름": {
+            title: [
+              {
+                text: {
+                  content: formData.name
+                }
+              }
+            ]
+          },
+          // 연락처 (phone_number 타입)
+          "연락처": {
+            phone_number: formData.phone
+          },
+          // 이메일 (email 타입)
+          "이메일": {
+            email: formData.email
+          },
+          // 구분 (select 타입)
+          "구분": {
+            select: {
+              name: formData.role
+            }
+          },
+          // 상대방 (select 타입)
+          "상대방": {
+            select: {
+              name: formData.counterparty
+            }
+          },
+          // 채권금액 (select 타입)
+          "채권금액": {
+            select: {
+              name: formData.amount
+            }
+          },
+          // 견적번호 (rich_text 타입)
+          "견적번호": {
+            rich_text: [
+              {
+                text: {
+                  content: quoteData.quoteNumber
+                }
+              }
+            ]
+          },
+          // 추천패키지 (rich_text 타입)
+          "추천패키지": {
+            rich_text: [
+              {
+                text: {
+                  content: `${recommendedPackage.name} - ${recommendedPackage.feeDisplay}`
+                }
+              }
+            ]
+          },
+          // 상태 (select 타입)
+          "상태": {
+            select: {
+              name: "신규접수"
+            }
+          },
+          // 접수일시 (date 타입)
+          "접수일시": {
+            date: {
+              start: new Date().toISOString()
+            }
+          },
+          // 사건개요 (rich_text 타입)
+          "사건개요": {
+            rich_text: [
+              {
+                text: {
+                  content: formData.summary || "상담 시 확인 예정"
+                }
+              }
+            ]
+          }
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('노션 API 오류:', response.status, errorText);
+      throw new Error(`노션 API 오류: ${response.status} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log('노션 저장 성공:', result.id);
+    return result;
+
+  } catch (error) {
+    console.error('노션 저장 실패:', error);
+    throw error;
+  }
+}
+
+// 매트릭스 견적 계산 함수 (기존과 동일)
 function calculateMatrixQuote(amount: string, counterparty: string, role: string) {
   // 기본 착수금 (스탠다드 기준)
   const basePrice: Record<string, number> = {
@@ -154,7 +280,7 @@ function calculateMatrixQuote(amount: string, counterparty: string, role: string
   };
 }
 
-// 매트릭스 견적서 HTML 이메일 생성
+// 매트릭스 견적서 HTML 이메일 생성 (기존과 동일)
 function createMatrixQuoteEmailHTML(formData: any, quoteData: any): string {
   const { packages, amount, isIndividualQuote, quoteNumber } = quoteData;
   
@@ -403,13 +529,27 @@ export async function POST(req: NextRequest) {
       packagesCount: quoteData.packages.length
     });
 
-    // 5. 환경변수 확인
+    // 5. 노션 데이터베이스 저장 시도
+    let notionResult = null;
+    try {
+      notionResult = await saveToNotion(body, quoteData);
+      if (notionResult) {
+        console.log('노션 저장 성공:', notionResult.id);
+      }
+    } catch (notionError) {
+      console.error('노션 저장 실패 (계속 진행):', notionError);
+      // 노션 저장 실패해도 이메일은 계속 진행
+    }
+
+    // 6. 환경변수 확인
     const envCheck = {
       SMTP_HOST: !!process.env.SMTP_HOST,
       SMTP_USER: !!process.env.SMTP_USER,
       SMTP_PASS: !!process.env.SMTP_PASS,
       MAIL_TO: !!process.env.MAIL_TO,
-      MAIL_FROM: !!process.env.MAIL_FROM
+      MAIL_FROM: !!process.env.MAIL_FROM,
+      NOTION_TOKEN: !!process.env.NOTION_TOKEN,
+      NOTION_DATABASE_ID: !!process.env.NOTION_DATABASE_ID
     };
     console.log('환경변수 상태:', envCheck);
 
@@ -421,7 +561,7 @@ export async function POST(req: NextRequest) {
       }, { status: 500 });
     }
 
-    // 6. SMTP 설정
+    // 7. SMTP 설정
     console.log('SMTP 설정 시작');
     let transporter;
     try {
@@ -443,7 +583,7 @@ export async function POST(req: NextRequest) {
       }, { status: 500 });
     }
 
-    // 7. SMTP 연결 테스트
+    // 8. SMTP 연결 테스트
     console.log('SMTP 연결 테스트 시작');
     try {
       await transporter.verify();
@@ -459,7 +599,7 @@ export async function POST(req: NextRequest) {
     const toOps = process.env.MAIL_TO || 'ops@example.com';
     const fromAddr = process.env.MAIL_FROM || 'noreply@moneyhero.co.kr';
 
-    // 8. 관리자 메일 발송 (간단 버전)
+    // 9. 관리자 메일 발송 (간단 버전)
     console.log('관리자 메일 발송 시작');
     try {
       const recommendedPackage = quoteData.packages[1]; // 스탠다드 패키지
@@ -471,6 +611,16 @@ export async function POST(req: NextRequest) {
         html: `
           <div style="font-family: system-ui; line-height: 1.6; max-width: 600px;">
             <h2 style="color: #dc2626;">🚨 새로운 매트릭스 견적 요청</h2>
+            
+            ${notionResult ? `
+            <div style="background: #d1fae5; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+              ✅ <strong>노션 저장 완료:</strong> <a href="https://notion.so/${notionResult.id.replace(/-/g, '')}" target="_blank">노션에서 보기</a>
+            </div>
+            ` : `
+            <div style="background: #fef3c7; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
+              ⚠️ <strong>노션 저장 실패:</strong> 수동으로 노션에 등록 필요
+            </div>
+            `}
             
             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
               <tr style="background: #f3f4f6;">
@@ -535,7 +685,7 @@ export async function POST(req: NextRequest) {
       }, { status: 500 });
     }
 
-    // 9. 고객 매트릭스 견적 메일 발송
+    // 10. 고객 매트릭스 견적 메일 발송
     console.log('고객 매트릭스 견적 메일 발송 시작');
     try {
       const matrixEmailHTML = createMatrixQuoteEmailHTML(body, quoteData);
@@ -558,7 +708,8 @@ export async function POST(req: NextRequest) {
       ok: true, 
       quoteNumber: quoteData.quoteNumber,
       packages: quoteData.packages.length,
-      message: '3가지 패키지 견적이 발송되었습니다.' 
+      notion: notionResult ? { saved: true, id: notionResult.id } : { saved: false },
+      message: '3가지 패키지 견적이 발송되었습니다.' + (notionResult ? ' (노션 저장 완료)' : ' (노션 저장 실패)')
     });
 
   } catch (error) {
