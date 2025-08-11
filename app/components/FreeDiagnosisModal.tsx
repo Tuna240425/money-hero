@@ -100,8 +100,6 @@ export default function FreeDiagnosisModal({ open, setOpen }: { open: boolean, s
               </div>
             </div>
 
-            // FreeDiagnosisModal.tsx에서 채권 금액 선택 부분 수정
-
             <div className="grid gap-2">
             <Label>채권 금액</Label>
             <Select name="amount" defaultValue="1천만~3천만">
