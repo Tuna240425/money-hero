@@ -30,7 +30,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  },
   twitter: {
     card: 'summary_large_image',
     title: 'MoneyHero - 채권회수 전문',
