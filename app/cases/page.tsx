@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { CheckCircle2, TrendingUp, Clock, DollarSign, Users, Building2, User, Gavel, Shield, Award, ArrowRight, Calendar, Target } from 'lucide-react'
 import Footer from "@/app/components/Footer"
+import Link from "next/link"
 
 const caseCategories = [
   { id: "all", label: "전체", icon: Target },
@@ -376,14 +377,24 @@ export default function CasesPage() {
                 지금까지의 성공 경험을 바탕으로 최적의 채권 회수 전략을 제안드립니다.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold px-8 py-3 rounded-xl">
-                  <Target className="w-5 h-5 mr-2" />
-                  무료 상담 신청
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold px-8 py-3 rounded-xl"
+                >
+                  <Link href="/process#quote">
+                    <Target className="w-5 h-5 mr-2" />
+                    무료 상담 신청
+                  </Link>
                 </Button>
-                <Button variant="outline" className="border-2 border-white/20 text-white hover:bg-white/10 px-8 py-3 rounded-xl">
+                <Button
+                  variant="outline"
+                  className="border-2 border-white/20 text-black hover:text-white hover:bg-white/10 px-8 py-3 rounded-xl"
+                >
                   <CheckCircle2 className="w-5 h-5 mr-2" />
                   성공 가능성 진단
                 </Button>
+
+
               </div>
             </CardContent>
           </Card>
