@@ -150,7 +150,9 @@ export default function Header() {
               {/* CTA 버튼 (데스크톱) */}
               <div className="hidden md:flex items-center gap-2">
                 <Link
-                  href="#kakao"
+                  href="https://open.kakao.com/o/sCiUMULh"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="px-3 py-2 rounded-md border text-sm font-medium transition-colors"
                   style={{ borderColor: 'var(--nav-fg)', color: 'var(--nav-fg)' }}
                 >
@@ -159,7 +161,7 @@ export default function Header() {
                   </span>
                 </Link>
                 <Link
-                  href="/quote"
+                  href="tel:02-3477-9650"
                   className="px-4 py-2 rounded-md text-sm font-semibold transition-opacity hover:opacity-90"
                   style={{ background: 'var(--nav-fg)', color: 'var(--nav-bg)' }}
                   data-analytics="nav_cta"
@@ -244,7 +246,9 @@ export default function Header() {
           <div className="p-4 border-t" style={{ borderColor: 'var(--nav-border)' }}>
             <div className="flex gap-2">
               <Link
-                href="#kakao"
+                href="https://open.kakao.com/o/sCiUMULh"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex-1 px-4 py-3 text-center rounded-md border font-semibold transition-colors"
                 style={{ borderColor: 'var(--nav-fg)', color: 'var(--nav-fg)' }}
                 onClick={() => setOpen(false)}
@@ -252,13 +256,13 @@ export default function Header() {
                 카톡 상담
               </Link>
               <Link
-                href="/quote"
+                href="tel:02-3477-9650"
                 className="flex-1 px-4 py-3 text-center rounded-md font-semibold transition-opacity hover:opacity-90"
                 style={{ background: 'var(--nav-fg)', color: 'var(--nav-bg)' }}
                 onClick={() => setOpen(false)}
                 data-analytics="nav_cta_mobile"
               >
-                무료 진단
+                전화 상담
               </Link>
             </div>
           </div>

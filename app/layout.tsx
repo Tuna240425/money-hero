@@ -21,6 +21,14 @@ export const metadata: Metadata = {
     title: 'MoneyHero - 채권회수 전문',
     description: '빼앗긴 돈, 빠르게 되찾아드립니다. 변호사 직접 수행, 당일 가압류 진단',
     siteName: 'MoneyHero',
+    images: [
+      {
+        url: '/favicon.png', // metadataBase 기준으로 절대 URL로 변환됨
+        width: 1200,
+        height: 630,
+        alt: 'MoneyHero - 채권회수 전문',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',

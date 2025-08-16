@@ -237,11 +237,11 @@ export default function QuotePreview() {
             <div class="contact-grid">
                 <div class="contact-item">
                     <div>대표번호</div>
-                    <div style="font-weight: bold; color: #fbbf24;">02-1234-5678</div>
+                    <div style="font-weight: bold; color: #fbbf24;">02-3477-9650</div>
                 </div>
                 <div class="contact-item">
                     <div>이메일</div>
-                    <div style="font-weight: bold; color: #fbbf24;">contact@moneyhero.co.kr</div>
+                    <div style="font-weight: bold; color: #fbbf24;">moneyhero.service@gmail.com</div>
                 </div>
                 <div class="contact-item">
                     <div>카카오톡</div>
@@ -249,11 +249,11 @@ export default function QuotePreview() {
                 </div>
                 <div class="contact-item">
                     <div>영업시간</div>
-                    <div style="font-weight: bold; color: #fbbf24;">평일 09:00-18:00</div>
+                    <div style="font-weight: bold; color: #fbbf24;">평일 10:00-17:00</div>
                 </div>
             </div>
             <p style="margin: 25px 0 10px 0; font-size: 14px; opacity: 0.8;">
-                © 2025 머니히어로. 모든 권리 보유. | 사업자등록번호: 123-45-67890
+                © 2025 머니히어로 | 임앤리 법률사무소. 모든 권리 보유. | 사업자등록번호: 654-39-00409
             </p>
         </div>
     </div>
