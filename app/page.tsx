@@ -60,12 +60,12 @@ export default function MoneyHeroLanding() {
 
   // 연락처 기능들
   const handlePhoneCall = () => {
-    window.open('tel:02-3477-9650', '_self')
+    window.open('tel:02-1234-5678', '_self')
   }
 
   const handleKakaoTalk = () => {
-    // 카카오톡 채널 연결
-    window.open('https://open.kakao.com/o/sCiUMULh', '_blank')
+    // 카카오톡 채널 연결 (실제 채널 ID로 변경 필요)
+    window.open('https://pf.kakao.com/_your_channel_id/chat', '_blank')
   }
 
   const handleFreeDiagnosis = () => {
@@ -558,8 +558,31 @@ export default function MoneyHeroLanding() {
               무료 진단으로 회수 가능성을 확인해보세요
             </p>
 
+<<<<<<< HEAD
 
               </div>
+=======
+            <div className="flex flex-col lg:flex-row gap-6 justify-center items-center mb-16">
+              <Button 
+                onClick={handleFreeDiagnosis}
+                className="bg-black hover:bg-gray-800 text-white px-12 py-6 text-xl font-black rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 min-w-[280px]"
+              >
+                <Clock className="w-6 h-6 mr-3" />
+                5분 무료 진단 시작
+              </Button>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button 
+                  onClick={handleKakaoTalk}
+                  variant="outline" 
+                  className="border-2 border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg bg-white/90 backdrop-blur-sm font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300"
+                >
+                  <MessageCircle className="w-5 h-5 mr-2" />
+                  전문가 카톡 상담
+                </Button>
+              </div>
+            </div>
+>>>>>>> 847db43c76723a5ffe81c6a66d3b712d4060a6bb
           </div>
       </section>
 

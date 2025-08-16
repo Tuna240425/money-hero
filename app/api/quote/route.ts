@@ -26,6 +26,7 @@ const SERVICE_PRICING = {
     description: "초기자문/내용증명",
     successFee: "회수금액의 10% 내외",
     features: [
+<<<<<<< HEAD
       "✅ 무료 초기 상담",
       "✅ 내용증명 발송",
       "✅ 기본 법률 자문",
@@ -35,6 +36,20 @@ const SERVICE_PRICING = {
     upsellMessage: "💡 더 확실한 회수를 원하신다면 스탠다드 서비스를 추천드립니다! 지급명령까지 포함하여 회수 성공률을 높일 수 있습니다."
   },
   standard: {
+=======
+      "초기 상담",
+      "내용증명 발송",
+      "기본 법률 자문",
+      "성공 시에만 보수"
+    ]
+  });
+  
+  // 2. 스탠다드 패키지 (기준)
+  const standardFee = isIndividualQuote ? 0 : Math.round(baseFee * multiplier);
+  const standardFeeDisplay = isIndividualQuote ? "개별 견적" : `${standardFee}만원`;
+  
+  packages.push({
+>>>>>>> 847db43c76723a5ffe81c6a66d3b712d4060a6bb
     name: "스탠다드",
     price: 55,
     description: "지급명령 포함",

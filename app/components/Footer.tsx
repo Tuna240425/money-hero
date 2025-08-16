@@ -47,7 +47,11 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="font-bold mb-4 text-yellow-400">연락처</h4>
             <div className="space-y-2 text-muted-foreground text-sm">
+<<<<<<< HEAD
               <p>이메일: moneyhero.service@gmail.com </p>
+=======
+              <p>이메일: moneyhero.service@gmail.com</p>
+>>>>>>> 847db43c76723a5ffe81c6a66d3b712d4060a6bb
               <p>주소: 서울특별시 송파구 법원로92, 806호(문정동, 파트너스1)</p>
             </div>
           </div>
