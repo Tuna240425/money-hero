@@ -1,17 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-<<<<<<< HEAD
-import { Badge } from '@/components/ui/badge'
-import { AlertTriangle } from 'lucide-react'
-=======
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
->>>>>>> 847db43c76723a5ffe81c6a66d3b712d4060a6bb
+import { Badge } from '@/components/ui/badge'
 
 export default function FreeDiagnosisModal({ 
   open, 
@@ -25,16 +21,7 @@ export default function FreeDiagnosisModal({
   onServiceReset?: () => void;
 }) {
   const [loading, setLoading] = useState(false)
-<<<<<<< HEAD
-  const [selectedRole, setSelectedRole] = useState('채권자')
   const [amountText, setAmountText] = useState('')
-
-  // 모달이 닫힐 때 선택된 서비스 리셋
-  useEffect(() => {
-    if (!open && onServiceReset) {
-      onServiceReset()
-    }
-  }, [open, onServiceReset])
 
   // 숫자를 간결한 한글로 변환하는 함수
   const numberToKorean = (num: number): string => {
@@ -63,35 +50,31 @@ export default function FreeDiagnosisModal({
     return result + '원'
   }
 
-  // 서비스별 제목과 설명
+  // 서비스 정보 결정
   const getServiceInfo = () => {
-    switch (selectedService) {
-      case 'start':
-        return {
-          title: '스타트 서비스 상담 신청',
-          description: '22만원부터 시작하는 기본 채권추심 서비스'
-        }
-      case 'standard':
-        return {
-          title: '스탠다드 서비스 상담 신청',
-          description: '55만원부터 시작하는 지급명령 포함 서비스'
-        }
-      case 'package':
-        return {
-          title: '집행패키지 서비스 상담 신청',
-          description: '고액 채권을 위한 맞춤형 프리미엄 서비스'
-        }
-      default:
-        return {
-          title: '상담 신청',
-          description: '전문 변호사와 함께하는 체계적인 채권 회수'
-        }
+    if (selectedService === 'start') {
+      return {
+        title: "스타트 서비스 상담 신청",
+        description: "22만원부터 - 내용증명 중심의 기본 서비스"
+      }
+    } else if (selectedService === 'standard') {
+      return {
+        title: "스탠다드 서비스 상담 신청", 
+        description: "55만원부터 - 지급명령 포함의 추천 서비스"
+      }
+    } else if (selectedService === 'package') {
+      return {
+        title: "집행패키지 서비스 상담 신청",
+        description: "개별 견적 - 가압류·강제집행 중심의 프리미엄 서비스"
+      }
+    }
+    return {
+      title: "5분 무료 진단 신청",
+      description: "채권 회수 가능성을 무료로 진단해드립니다"
     }
   }
 
   const serviceInfo = getServiceInfo()
-=======
->>>>>>> 847db43c76723a5ffe81c6a66d3b712d4060a6bb
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -129,28 +112,12 @@ export default function FreeDiagnosisModal({
                 body: JSON.stringify(payload),
               })
               const json = await res.json()
-<<<<<<< HEAD
-              
-              if (json?.debtorService) {
-                alert('채무자 서비스는 현재 준비 중입니다.\n담당자가 빠른 시일 내 연락드리겠습니다.');
-                form.reset()
-                setOpen(false)
-              } else if (json?.ok) {
-                // 서비스별 맞춤 메시지
-                let message = '접수되었습니다! 맞춤 견적서를 이메일로 발송했습니다.'
-                if (selectedService === 'package') {
-                  message = '집행패키지 상담이 접수되었습니다! 전문 변호사가 24시간 내 연락드리겠습니다.'
-                } else if (selectedService) {
-                  message = `${selectedService === 'start' ? '스타트' : '스탠다드'} 서비스 견적서를 이메일로 발송했습니다!`
-                }
-                
-                alert(message)
-=======
               if (json?.ok) {
                 alert('접수되었습니다! 맞춤 견적서를 이메일로 발송했습니다.')
->>>>>>> 847db43c76723a5ffe81c6a66d3b712d4060a6bb
                 form.reset()
+                setAmountText('')
                 setOpen(false)
+                if (onServiceReset) onServiceReset()
               } else {
                 alert(`전송 실패: ${json?.error ?? '다시 시도해주세요.'}`)
               }
@@ -205,17 +172,6 @@ export default function FreeDiagnosisModal({
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label>의뢰자 유형</Label>
-<<<<<<< HEAD
-                <select 
-                  name="role" 
-                  defaultValue="채권자" 
-                  onChange={(e) => setSelectedRole(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  <option value="채권자">채권자</option>
-                  <option value="채무자">채무자 (준비중)</option>
-                </select>
-=======
                 <Select name="role" defaultValue="채권자">
                   <SelectTrigger><SelectValue placeholder="선택" /></SelectTrigger>
                   <SelectContent>
@@ -223,22 +179,18 @@ export default function FreeDiagnosisModal({
                     <SelectItem value="채무자">채무자</SelectItem>
                   </SelectContent>
                 </Select>
->>>>>>> 847db43c76723a5ffe81c6a66d3b712d4060a6bb
               </div>
               <div className="grid gap-2">
                 <Label>상대방 유형</Label>
-                <select 
-                  name="counterparty" 
-                  defaultValue="개인"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  <option value="개인">개인</option>
-                  <option value="법인/사업자">법인/사업자</option>
-                </select>
+                <Select name="counterparty" defaultValue="개인">
+                  <SelectTrigger><SelectValue placeholder="선택" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="개인">개인</SelectItem>
+                    <SelectItem value="법인/사업자">법인/사업자</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-
-
 
             <div className="grid gap-2">
               <Label htmlFor="amount">채권 금액</Label>
@@ -283,12 +235,7 @@ export default function FreeDiagnosisModal({
 
           <DialogFooter className="mt-2">
             <Button type="submit" className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold" disabled={loading}>
-<<<<<<< HEAD
-              {loading ? '전송 중...' : (selectedRole === '채무자' ? '문의 접수하기' : 
-                selectedService === 'package' ? '전문 상담 신청하기' : '접수하기')}
-=======
               {loading ? '전송 중...' : '접수하기'}
->>>>>>> 847db43c76723a5ffe81c6a66d3b712d4060a6bb
             </Button>
             <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
               닫기

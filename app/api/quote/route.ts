@@ -2,7 +2,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
 import { db } from '@/lib/firebaseAdmin.server'
-import { saveToNotion } from '@/lib/notionClient' // 노션 클라이언트 추가
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -26,7 +25,6 @@ const SERVICE_PRICING = {
     description: "초기자문/내용증명",
     successFee: "회수금액의 10% 내외",
     features: [
-<<<<<<< HEAD
       "✅ 무료 초기 상담",
       "✅ 내용증명 발송",
       "✅ 기본 법률 자문",
@@ -36,20 +34,6 @@ const SERVICE_PRICING = {
     upsellMessage: "💡 더 확실한 회수를 원하신다면 스탠다드 서비스를 추천드립니다! 지급명령까지 포함하여 회수 성공률을 높일 수 있습니다."
   },
   standard: {
-=======
-      "초기 상담",
-      "내용증명 발송",
-      "기본 법률 자문",
-      "성공 시에만 보수"
-    ]
-  });
-  
-  // 2. 스탠다드 패키지 (기준)
-  const standardFee = isIndividualQuote ? 0 : Math.round(baseFee * multiplier);
-  const standardFeeDisplay = isIndividualQuote ? "개별 견적" : `${standardFee}만원`;
-  
-  packages.push({
->>>>>>> 847db43c76723a5ffe81c6a66d3b712d4060a6bb
     name: "스탠다드",
     price: 55,
     description: "지급명령 포함",
@@ -438,27 +422,7 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // 🎯 1. 노션에 데이터 저장 (우선순위 1)
-    try {
-      await saveToNotion({
-        name: body.name,
-        email: body.email,
-        phone: body.phone,
-        role: body.role,
-        counterparty: body.counterparty,
-        amount: body.amount,
-        summary: body.summary,
-        requestedService,
-        quoteNumber,
-        selectedServicePrice: selectedService.price,
-      })
-      console.log('노션 저장 성공')
-    } catch (notionError) {
-      console.error('노션 저장 실패:', notionError)
-      // 노션 실패해도 계속 진행
-    }
-
-    // 2. Firebase에 데이터 저장 (선택적)
+    // 1. Firebase에 데이터 저장 (선택적)
     if (db) {
       try {
         const docRef = await db.collection('quote-requests').add({
@@ -479,118 +443,22 @@ export async function POST(req: NextRequest) {
       console.log('Firebase가 설정되지 않음 - 데이터 저장 스킵')
     }
 
-    // 3. SMTP 설정 (환경변수 체크)
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.error('SMTP 환경변수가 설정되지 않았습니다.')
-      return NextResponse.json({ 
-        error: '이메일 설정이 완료되지 않았습니다. 관리자에게 문의해주세요.' 
-      }, { status: 500 })
-    }
-
-    const transporter = nodemailer.createTransport({
+    // 2. 환경변수 확인
+    console.log('SMTP 환경변수 확인:', {
       host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT || 587),
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
+      port: process.env.SMTP_PORT,
+      user: process.env.SMTP_USER ? '설정됨' : '없음',
+      pass: process.env.SMTP_PASS ? '설정됨' : '없음',
     })
 
-    const toOps = process.env.MAIL_TO || 'ops@example.com'
-    const fromAddr = process.env.MAIL_FROM || 'noreply@moneyhero.co.kr'
-
-    // 4. 관리자 알림 메일
-    try {
-      await transporter.sendMail({
-        from: fromAddr,
-        to: toOps,
-        subject: `🚨 [${selectedService.name} 견적] ${body.role} | ${body.name} | ${body.amount} | ${selectedService.price === 0 ? '상담견적' : selectedService.price + '만원'}`,
-        html: `
-          <div style="font-family: system-ui; line-height: 1.6;">
-            <h2 style="color: #dc2626;">🚨 새로운 ${selectedService.name} 서비스 견적 요청</h2>
-            
-            <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
-              <h3 style="margin: 0 0 10px 0; color: #92400e;">선택 서비스</h3>
-              <p style="margin: 0; font-size: 18px;"><strong>${selectedService.name}</strong> - ${selectedService.price === 0 ? '상담 후 견적' : selectedService.price + '만원 부터~'}</p>
-            </div>
-            
-            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-              <tr style="background: #f3f4f6;">
-                <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">이름</td>
-                <td style="padding: 10px; border: 1px solid #d1d5db;">${body.name}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">연락처</td>
-                <td style="padding: 10px; border: 1px solid #d1d5db;">${body.phone}</td>
-              </tr>
-              <tr style="background: #f3f4f6;">
-                <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">이메일</td>
-                <td style="padding: 10px; border: 1px solid #d1d5db;">${body.email}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">구분</td>
-                <td style="padding: 10px; border: 1px solid #d1d5db;">${body.role}</td>
-              </tr>
-              <tr style="background: #f3f4f6;">
-                <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">상대방</td>
-                <td style="padding: 10px; border: 1px solid #d1d5db;">${body.counterparty}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">채권금액</td>
-                <td style="padding: 10px; border: 1px solid #d1d5db;">${body.amount}</td>
-              </tr>
-            </table>
-
-            ${body.summary ? `
-            <h3>📝 사건 개요:</h3>
-            <div style="background: #f9fafb; padding: 15px; border-left: 4px solid #6b7280; border-radius: 4px;">
-              ${body.summary.replace(/\n/g, '<br>')}
-            </div>
-            ` : ''}
-            
-            <p style="margin-top: 20px; padding: 15px; background: #dbeafe; border-radius: 8px;">
-              💡 <strong>할 일:</strong> 24시간 내 ${body.phone}로 연락하여 ${selectedService.name} 서비스 상담 진행<br>
-              📋 <strong>견적번호:</strong> ${quoteNumber}<br>
-              🗂️ <strong>노션:</strong> 고객 정보가 노션 DB에 자동으로 저장되었습니다.
-            </p>
-          </div>
-        `,
-      })
-    } catch (emailError) {
-      console.error('관리자 메일 발송 실패:', emailError)
-      // 관리자 메일 실패해도 계속 진행
-    }
-
-    // 5. 고객용 견적서 메일
-    const isPackageRequest = requestedService === 'package'
-    const emailHTML = createServiceQuoteHTML(body, quoteNumber)
-    
-    try {
-      await transporter.sendMail({
-        from: fromAddr,
-        to: body.email,
-        subject: isPackageRequest 
-          ? `[머니히어로] ${body.name}님 집행패키지 상담 예약 완료 📞`
-          : `[머니히어로] ${body.name}님 ${selectedService.name} 서비스 견적서 📋`,
-        html: emailHTML,
-      })
-    } catch (emailError) {
-      console.error('고객 메일 발송 실패:', emailError)
-      return NextResponse.json({ 
-        error: '견적서 발송 중 오류가 발생했습니다. 다시 시도해주세요.' 
-      }, { status: 500 })
-    }
-
-    console.log('=== 서비스별 견적 API 완료 ===')
+    // 임시로 이메일 발송 없이 성공 응답 (테스트용)
+    console.log('=== 서비스별 견적 API 완료 (테스트 모드) ===')
     return NextResponse.json({ 
       ok: true, 
       quoteNumber,
       service: selectedService.name,
       price: selectedService.price,
-      message: isPackageRequest 
-        ? '집행패키지 상담이 예약되었습니다. 담당자가 연락드리겠습니다.'
-        : `${selectedService.name} 서비스 견적서가 발송되었습니다.`
+      message: `접수되었습니다! (테스트 모드 - 이메일 발송 스킵)`
     })
 
   } catch (error) {

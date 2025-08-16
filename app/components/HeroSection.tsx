@@ -195,66 +195,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
       <div className="container mx-auto px-6 lg:px-8 grid md:grid-cols-2 gap-8 items-center flex-1">
         
         {/* Left: Text */}
-<<<<<<< HEAD
-        <div className="text-white space-y-3 sm:space-y-4 md:space-y-6 max-w-[480px] mx-auto md:ml-auto md:mr-0">
-          <Badge className="bg-yellow-400 text-black hover:bg-black hover:text-white font-black px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 inline-flex items-center text-sm sm:text-base lg:text-lg shadow-lg border-2 border-yellow-500 transition-colors duration-300">
-            <Shield className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2 sm:mr-3" />
-            <span className="text-xs sm:text-sm lg:text-base">채권금액 관계없이 투명한 고정가격</span>
-=======
         <div className="text-white space-y-6 max-w-[480px] ml-auto">
           <Badge className="bg-yellow-400 text-black hover:bg-black hover:text-white font-black px-8 py-4 inline-flex items-center text-lg shadow-lg border-2 border-yellow-500 transition-colors duration-300">
             <Zap className="w-6 h-6 mr-3" />
             오늘 17시 이전 접수 시, 당일 회신
->>>>>>> 847db43c76723a5ffe81c6a66d3b712d4060a6bb
           </Badge>
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-tight">
             빼앗긴&nbsp;돈,<br />
-<<<<<<< HEAD
-            <span className="text-yellow-400">명확한&nbsp;가격으로!</span><br />
-            <span className="text-yellow-400">합법적으로!</span><br />
-            되찾아드립니다
-          </h1>
-          
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 leading-relaxed">
-            복잡한 금액별 계산 없이 <span className="text-yellow-400 font-bold">투명한 고정가격</span>으로 안심하세요
-          </p>
-          
-          {/* 간단한 가격 미리보기 */}
-          <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/20">
-            <h3 className="text-lg font-bold text-yellow-400 mb-3">💰 투명한 가격표</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-white/80">스타트:</span>
-                <span className="text-white font-semibold">22만원</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/80">스탠다드:</span>
-                <span className="text-yellow-400 font-semibold">55만원 ⭐</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/80">집행패키지:</span>
-                <span className="text-white font-semibold">상담견적</span>
-              </div>
-              <div className="pt-2 border-t border-white/20">
-                <p className="text-xs text-white/70">+ 성공보수 10% 내외</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 text-sm sm:text-base lg:text-lg text-white/90">
-            <div className="flex items-center">
-              <Shield className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-400 mr-2 flex-shrink-0" />
-              <span>변호사 직접 수행</span>
-            </div>
-            <div className="flex items-center">
-              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-400 mr-2 flex-shrink-0" />
-              <span>고정가격 시스템</span>
-            </div>
-            <div className="flex items-center">
-              <Zap className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-400 mr-2 flex-shrink-0" />
-              <span>당일 진단</span>
-            </div>
-=======
             <span className="text-yellow-400">빠르게!</span><br />
             <span className="text-yellow-400">합법적으로!</span>
             되찾아<br />드립니다
@@ -265,7 +212,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
           <div className="flex flex-wrap gap-4 text-lg text-white/90">
             <div className="flex items-center"><Shield className="w-6 h-6 text-yellow-400 mr-2" />변호사 직접 수행</div>
             <div className="flex items-center"><Zap className="w-6 h-6 text-yellow-400 mr-2" />당일 진단</div>
->>>>>>> 847db43c76723a5ffe81c6a66d3b712d4060a6bb
           </div>
         </div>
 

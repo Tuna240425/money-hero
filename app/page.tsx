@@ -557,32 +557,7 @@ export default function MoneyHeroLanding() {
             <p className="text-xl sm:text-2xl md:text-3xl mb-12 font-bold drop-shadow-md">
               무료 진단으로 회수 가능성을 확인해보세요
             </p>
-
-<<<<<<< HEAD
-
-              </div>
-=======
-            <div className="flex flex-col lg:flex-row gap-6 justify-center items-center mb-16">
-              <Button 
-                onClick={handleFreeDiagnosis}
-                className="bg-black hover:bg-gray-800 text-white px-12 py-6 text-xl font-black rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 min-w-[280px]"
-              >
-                <Clock className="w-6 h-6 mr-3" />
-                5분 무료 진단 시작
-              </Button>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  onClick={handleKakaoTalk}
-                  variant="outline" 
-                  className="border-2 border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg bg-white/90 backdrop-blur-sm font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300"
-                >
-                  <MessageCircle className="w-5 h-5 mr-2" />
-                  전문가 카톡 상담
-                </Button>
-              </div>
-            </div>
->>>>>>> 847db43c76723a5ffe81c6a66d3b712d4060a6bb
+          </div>
           </div>
       </section>
 
