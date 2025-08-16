@@ -286,7 +286,7 @@ export default function PricingPage() {
                   className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold h-12 rounded-xl"
                 >
                   <Link href="/process#quote">
-                    맞춤 견적 받고 무료 상담 신청하기
+                    맞춤 견적 받고 상담 신청하기
                   </Link>
                 </Button>
               </div>

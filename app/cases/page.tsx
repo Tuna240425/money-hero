@@ -383,7 +383,7 @@ export default function CasesPage() {
                 >
                   <Link href="/process#quote">
                     <Target className="w-5 h-5 mr-2" />
-                    무료 상담 신청
+                    상담 신청
                   </Link>
                 </Button>
                 <Button

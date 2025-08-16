@@ -363,15 +363,15 @@ export default function MoneyHeroLanding() {
             <p className="text-xl md:text-2xl text-muted-foreground font-medium">결과 중심의 합리적 수임료</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <Card className="relative bg-card border-border">
+          <div className="grid md:grid-cols-3 gap-8 md:items-stretch">
+            <Card className="relative bg-card border-border flex flex-col h-full">
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl text-foreground">스타트</CardTitle>
-                <div className="text-3xl font-black text-yellow-400">0원 + 성공보수</div>
-                <CardDescription className="text-muted-foreground text-lg">초기자문/내용증명, 회수 시 성공보수 부과</CardDescription>
+                <div className="text-3xl font-black text-yellow-400">22만원 부터~ </div>
+                <CardDescription className="text-muted-foreground text-lg">초기자문/내용증명</CardDescription>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-4">
+              <CardContent className="flex-1 flex flex-col">
+                <ul className="space-y-4 flex-1">
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-yellow-400 mr-4 flex-shrink-0" />
                     <span className="text-foreground">무료 초기 상담</span>
@@ -382,11 +382,11 @@ export default function MoneyHeroLanding() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-yellow-400 mr-4 flex-shrink-0" />
-                    <span className="text-foreground">성공 시에만 보수 부과</span>
+                    <span className="text-foreground">기본 법률 자문</span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-yellow-400 mr-4 flex-shrink-0" />
-                    <span className="text-foreground">기본 법률 자문</span>
+                    <span className="text-foreground">회수 시 성공보수 발생</span>
                   </li>
                 </ul>
                 <Button 
@@ -398,19 +398,17 @@ export default function MoneyHeroLanding() {
               </CardContent>
             </Card>
 
-            <Card className="relative bg-card border-2 border-yellow-400 shadow-2xl scale-105">
+            <Card className="relative bg-card border-2 border-yellow-400 shadow-2xl scale-105 flex flex-col h-full">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <Badge className="bg-yellow-400 text-black px-6 py-2 font-bold text-lg hover:bg-black hover:text-white transition-colors duration-200">
-                  추천
-                </Badge>
+                <Badge className="bg-yellow-400 text-black px-6 py-2 font-bold text-lg">추천</Badge>
               </div>
               <CardHeader className="text-center">
                 <CardTitle className="text-2xl text-foreground">스탠다드</CardTitle>
-                <div className="text-3xl font-black text-yellow-400">착수금 정액 + 성공보수 할인</div>
-                <CardDescription className="text-muted-foreground text-lg">지급명령·소송대리 포함</CardDescription>
+                <div className="text-3xl font-black text-yellow-400">55만원 부터~ </div>
+                <CardDescription className="text-muted-foreground text-lg">지급명령 포함</CardDescription>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-4">
+              <CardContent className="flex-1 flex flex-col">
+                <ul className="space-y-4 flex-1">
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-yellow-400 mr-4 flex-shrink-0" />
                     <span className="text-foreground">모든 스타트 서비스</span>
@@ -421,15 +419,11 @@ export default function MoneyHeroLanding() {
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-yellow-400 mr-4 flex-shrink-0" />
-                    <span className="text-foreground">소송 대리</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="w-5 h-5 text-yellow-400 mr-4 flex-shrink-0" />
-                    <span className="text-foreground">성공보수 할인</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="w-5 h-5 text-yellow-400 mr-4 flex-shrink-0" />
                     <span className="text-foreground">진행상황 알림</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mr-4 flex-shrink-0" />
+                    <span className="text-foreground">회수 시 성공보수 발생</span>
                   </li>
                 </ul>
                 <Button 
@@ -441,14 +435,14 @@ export default function MoneyHeroLanding() {
               </CardContent>
             </Card>
 
-            <Card className="relative bg-card border-border">
+            <Card className="relative bg-card border-border flex flex-col h-full">
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl text-foreground">패키지</CardTitle>
-                <div className="text-3xl font-black text-yellow-400">별도 견적형</div>
+                <CardTitle className="text-2xl text-foreground">집행패키지</CardTitle>
+                <div className="text-3xl font-black text-yellow-400">견적형</div>
                 <CardDescription className="text-muted-foreground text-lg">가압류·강제집행 중심</CardDescription>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-4">
+              <CardContent className="flex-1 flex flex-col">
+                <ul className="space-y-4 flex-1">
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-yellow-400 mr-4 flex-shrink-0" />
                     <span className="text-foreground">모든 스탠다드 서비스</span>
@@ -468,6 +462,10 @@ export default function MoneyHeroLanding() {
                   <li className="flex items-center">
                     <CheckCircle className="w-5 h-5 text-yellow-400 mr-4 flex-shrink-0" />
                     <span className="text-foreground">맞춤형 전략</span>
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-yellow-400 mr-4 flex-shrink-0" />
+                    <span className="text-foreground">회수 시 성공보수 발생</span>
                   </li>
                 </ul>
                 <Button 
@@ -514,7 +512,7 @@ export default function MoneyHeroLanding() {
             />
             <AccordionItem 
               question="성공보수는 언제 발생하나요?" 
-              answer="실제 회수된 시점에만 발생합니다." 
+              answer="승소 또는 실제 회수된 시점에만 발생합니다." 
               isOpen={openFaq === 2} 
               onClick={() => setOpenFaq(openFaq === 2 ? null : 2)} 
             />
@@ -558,30 +556,11 @@ export default function MoneyHeroLanding() {
                   <MessageCircle className="w-5 h-5 mr-2" />
                   카톡 상담
                 </Button>
-                <Button 
-                  onClick={handlePhoneCall}
-                  variant="outline" 
-                  className="border-2 border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg bg-white/90 backdrop-blur-sm font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300"
-                >
-                  <Phone className="w-5 h-5 mr-2" />
-                  전화 상담
-                </Button>
               </div>
             </div>
 
             <div className="grid sm:grid-cols-3 gap-8 bg-black/10 backdrop-blur-sm rounded-3xl p-8 shadow-2xl">
-              <div className="text-center">
-                <div className="text-4xl font-black text-white mb-2">24시간</div>
-                <div className="text-lg font-semibold">빠른 응답</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-black text-white mb-2">100%</div>
-                <div className="text-lg font-semibold">무료 상담</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl font-black text-white mb-2">전문가</div>
-                <div className="text-lg font-semibold">직접 상담</div>
-              </div>
+
             </div>
           </div>
         </div>

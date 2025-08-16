@@ -1,388 +1,108 @@
 // app/api/quote/route.ts
+'use server'
+
 import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
+import { db } from '@/lib/firebaseAdmin.server'
 
-// 노션 API 연동 함수
-async function saveToNotion(formData: any, quoteData: any) {
-  const notionToken = process.env.NOTION_TOKEN;
-  const notionDatabaseId = process.env.NOTION_DATABASE_ID;
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
-  if (!notionToken || !notionDatabaseId) {
-    console.log('노션 환경변수 누락 - 노션 저장 건너뜀');
-    return null;
-  }
-
-  try {
-    console.log('노션 데이터베이스 저장 시작');
-    
-    // 추천 패키지 정보
-    const recommendedPackage = quoteData.packages[1]; // 스탠다드 패키지
-    
-    const response = await fetch('https://api.notion.com/v1/pages', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${notionToken}`,
-        'Content-Type': 'application/json',
-        'Notion-Version': '2022-06-28'
-      },
-      body: JSON.stringify({
-        parent: {
-          database_id: notionDatabaseId
-        },
-        properties: {
-          // 이름 (title 타입)
-          "이름": {
-            title: [
-              {
-                text: {
-                  content: formData.name
-                }
-              }
-            ]
-          },
-          // 연락처 (phone_number 타입)
-          "연락처": {
-            phone_number: formData.phone
-          },
-          // 이메일 (email 타입)
-          "이메일": {
-            email: formData.email
-          },
-          // 구분 (select 타입)
-          "구분": {
-            select: {
-              name: formData.role
-            }
-          },
-          // 상대방 (select 타입)
-          "상대방": {
-            select: {
-              name: formData.counterparty
-            }
-          },
-          // 채권금액 (select 타입)
-          "채권금액": {
-            select: {
-              name: formData.amount
-            }
-          },
-          // 견적번호 (rich_text 타입)
-          "견적번호": {
-            rich_text: [
-              {
-                text: {
-                  content: quoteData.quoteNumber
-                }
-              }
-            ]
-          },
-          // 추천패키지 (rich_text 타입)
-          "추천패키지": {
-            rich_text: [
-              {
-                text: {
-                  content: `${recommendedPackage.name} - ${recommendedPackage.feeDisplay}`
-                }
-              }
-            ]
-          },
-          // 상태 (select 타입)
-          "상태": {
-            select: {
-              name: "신규접수"
-            }
-          },
-          // 접수일시 (date 타입)
-          "접수일시": {
-            date: {
-              start: new Date().toISOString()
-            }
-          },
-          // 사건개요 (rich_text 타입)
-          "사건개요": {
-            rich_text: [
-              {
-                text: {
-                  content: formData.summary || "상담 시 확인 예정"
-                }
-              }
-            ]
-          }
-        }
-      })
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('노션 API 오류:', response.status, errorText);
-      throw new Error(`노션 API 오류: ${response.status} - ${errorText}`);
-    }
-
-    const result = await response.json();
-    console.log('노션 저장 성공:', result.id);
-    return result;
-
-  } catch (error) {
-    console.error('노션 저장 실패:', error);
-    throw error;
-  }
+type QuoteRequest = {
+  name: string
+  email: string
+  phone: string
+  role: '채권자' | '채무자'
+  counterparty: '개인' | '법인/사업자'
+  amount: string
+  summary?: string
+  requestedService?: 'start' | 'standard' | 'package' // 요청한 서비스 타입
 }
 
-// 채무자 문의 처리 함수
-async function handleDebtorInquiry(formData: any) {
-  console.log('=== 채무자 문의 처리 ===');
-  
-  const envCheck = {
-    SMTP_HOST: !!process.env.SMTP_HOST,
-    SMTP_USER: !!process.env.SMTP_USER,
-    SMTP_PASS: !!process.env.SMTP_PASS,
-    MAIL_TO: !!process.env.MAIL_TO,
-    MAIL_FROM: !!process.env.MAIL_FROM
-  };
-  console.log('환경변수 상태:', envCheck);
-
-  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.error('SMTP 환경변수 누락 - 이메일 발송 불가');
-    return { emailSent: false, reason: 'SMTP 설정 누락' };
-  }
-
-  try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT || 587),
-      secure: process.env.SMTP_PORT === '465',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
-    await transporter.verify();
-    console.log('SMTP 연결 성공');
-
-    const toOps = process.env.MAIL_TO || 'ops@example.com';
-    const fromAddr = process.env.MAIL_FROM || 'noreply@moneyhero.co.kr';
-
-    // 관리자에게 채무자 문의 알림
-    await transporter.sendMail({
-      from: fromAddr,
-      to: toOps,
-      subject: `🔔 [채무자 문의] ${formData.name} | ${formData.amount} | 서비스 준비중`,
-      html: `
-        <div style="font-family: system-ui; line-height: 1.6; max-width: 600px;">
-          <h2 style="color: #dc2626;">🔔 채무자 서비스 문의</h2>
-          
-          <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #f59e0b;">
-            <strong>⚠️ 현재 채무자 서비스는 준비중입니다</strong><br>
-            개별 연락이 필요한 문의입니다.
-          </div>
-          
-          <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-            <tr style="background: #f3f4f6;">
-              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">이름</td>
-              <td style="padding: 10px; border: 1px solid #d1d5db;">${formData.name}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">연락처</td>
-              <td style="padding: 10px; border: 1px solid #d1d5db;">${formData.phone}</td>
-            </tr>
-            <tr style="background: #f3f4f6;">
-              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">이메일</td>
-              <td style="padding: 10px; border: 1px solid #d1d5db;">${formData.email}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">구분</td>
-              <td style="padding: 10px; border: 1px solid #d1d5db; color: #dc2626; font-weight: bold;">${formData.role}</td>
-            </tr>
-            <tr style="background: #f3f4f6;">
-              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">상대방</td>
-              <td style="padding: 10px; border: 1px solid #d1d5db;">${formData.counterparty}</td>
-            </tr>
-            <tr>
-              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">채권금액</td>
-              <td style="padding: 10px; border: 1px solid #d1d5db; color: #dc2626; font-weight: bold;">${formData.amount}</td>
-            </tr>
-          </table>
-
-          ${formData.summary ? `
-          <h3>📝 문의내용:</h3>
-          <div style="background: #f9fafb; padding: 15px; border-radius: 8px; border-left: 4px solid #6b7280;">
-            ${formData.summary.replace(/\n/g, '<br>')}
-          </div>
-          ` : ''}
-          
-          <p style="margin-top: 20px; padding: 15px; background: #dbeafe; border-radius: 8px;">
-            💡 <strong>할 일:</strong> 24시간 내 ${formData.phone}로 연락하여 채무자 서비스 일정 안내<br>
-            📅 <strong>접수시간:</strong> ${new Date().toLocaleString('ko-KR')}
-          </p>
-        </div>
-      `,
-    });
-
-    console.log('채무자 문의 관리자 알림 발송 성공');
-    return { emailSent: true };
-
-  } catch (error) {
-    console.error('채무자 문의 이메일 발송 실패:', error);
-    return { emailSent: false, reason: error instanceof Error ? error.message : String(error) };
-  }
-}
-
-// 매트릭스 견적 계산 함수 (기존과 동일)
-function calculateMatrixQuote(amount: string, counterparty: string, role: string) {
-  // 기본 착수금 (스탠다드 기준)
-  const basePrice: Record<string, number> = {
-    "~500만원": 22,           // 22만원
-    "500만~1천만": 28,        // 28만원
-    "1천만~3천만": 33,        // 33만원
-    "3천만~5천만": 44,        // 44만원
-    "5천만~1억": 55,          // 55만원
-    "1억원 이상": 0           // 개별 견적
-  };
-  
-  // 기본 성공보수율 (스탠다드 기준)
-  const baseSuccessRates: Record<string, { creditor: string, debtor: string, creditorRange: [number, number], debtorRange: [number, number] }> = {
-    "~500만원": {
-      creditor: "회수금액의 10~18%",
-      debtor: "협상된 감액의 8~15%",
-      creditorRange: [10, 18],
-      debtorRange: [8, 15]
-    },
-    "500만~1천만": {
-      creditor: "회수금액의 10~18%",
-      debtor: "협상된 감액의 8~15%",
-      creditorRange: [10, 18],
-      debtorRange: [8, 15]
-    },
-    "1천만~3천만": {
-      creditor: "회수금액의 8~15%",
-      debtor: "협상된 감액의 6~12%",
-      creditorRange: [8, 15],
-      debtorRange: [6, 12]
-    },
-    "3천만~5천만": {
-      creditor: "회수금액의 8~15%",
-      debtor: "협상된 감액의 6~12%",
-      creditorRange: [8, 15],
-      debtorRange: [6, 12]
-    },
-    "5천만~1억": {
-      creditor: "회수금액의 7~12%",
-      debtor: "협상된 감액의 5~10%",
-      creditorRange: [7, 12],
-      debtorRange: [5, 10]
-    },
-    "1억원 이상": {
-      creditor: "회수금액의 6~10%",
-      debtor: "협상된 감액의 4~8%",
-      creditorRange: [6, 10],
-      debtorRange: [4, 8]
-    }
-  };
-
-  // 법인 할증률
-  const multiplier = counterparty === '법인/사업자' ? 1.2 : 1.0;
-  
-  // 견적서 번호 생성
-  const now = new Date();
-  const quoteNumber = `MH-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
-  
-  // 3가지 패키지별 견적 계산
-  const packages = [];
-  
-  // 기본 데이터
-  const baseFee = basePrice[amount] || 33;
-  const baseRates = baseSuccessRates[amount] || baseSuccessRates["1천만~3천만"];
-  const isIndividualQuote = amount === "1억원 이상";
-  
-  // 1. 스타트 패키지
-  const startFee = 0; // 무료
-  const startCreditorRange = [
-    Math.min(baseRates.creditorRange[0] + 3, 25), // +3% (최대 25%)
-    Math.min(baseRates.creditorRange[1] + 3, 28)  // +3% (최대 28%)
-  ];
-  const startDebtorRange = [
-    Math.min(baseRates.debtorRange[0] + 3, 20),   // +3% (최대 20%)
-    Math.min(baseRates.debtorRange[1] + 3, 23)    // +3% (최대 23%)
-  ];
-  
-  packages.push({
+// 서비스별 고정 가격 정의
+const SERVICE_PRICING = {
+  start: {
     name: "스타트",
+    price: 22,
     description: "기본 상담 + 내용증명",
-    fee: startFee,
-    feeDisplay: "₩0",
-    successFee: role === '채권자' 
-      ? `회수금액의 ${startCreditorRange[0]}~${startCreditorRange[1]}%`
-      : `협상된 감액의 ${startDebtorRange[0]}~${startDebtorRange[1]}%`,
+    successFee: "회수금액의 10% 내외",
     features: [
-      "무료 초기 상담",
-      "내용증명 발송",
-      "기본 법률 자문",
-      "성공 시에만 보수"
-    ]
-  });
-  
-  // 2. 스탠다드 패키지 (기준)
-  const standardFee = isIndividualQuote ? 0 : Math.round(baseFee * multiplier);
-  const standardFeeDisplay = isIndividualQuote ? "개별 견적" : `${standardFee}만원`;
-  
-  packages.push({
+      "✅ 초기 상담 및 사건 분석",
+      "✅ 내용증명 발송",
+      "✅ 기본 법률 자문",
+      "✅ 성공 시에만 보수 지급"
+    ],
+    marketingMessage: "💡 더 확실한 회수를 원하신다면 스탠다드 서비스를 추천드립니다!"
+  },
+  standard: {
     name: "스탠다드",
+    price: 55,
     description: "지급명령 + 소송대리 포함",
-    fee: standardFee,
-    feeDisplay: standardFeeDisplay,
-    successFee: role === '채권자' ? baseRates.creditor : baseRates.debtor,
+    successFee: "회수금액의 10% 내외",
     features: [
-      "모든 스타트 서비스",
-      "지급명령 신청",
-      "소송 대리",
-      "성공보수 할인",
-      "진행상황 알림"
-    ]
-  });
-  
-  // 3. 패키지
-  const executionFee = isIndividualQuote ? 0 : Math.round(baseFee * 1.5 * multiplier);
-  const executionFeeDisplay = isIndividualQuote ? "개별 견적" : `${executionFee}만원`;
-  const executionCreditorRange = [
-    Math.max(baseRates.creditorRange[0] - 3, 3), // -3% (최소 3%)
-    Math.max(baseRates.creditorRange[1] - 3, 8)  // -3% (최소 8%)
-  ];
-  const executionDebtorRange = [
-    Math.max(baseRates.debtorRange[0] - 3, 2),   // -3% (최소 2%)
-    Math.max(baseRates.debtorRange[1] - 3, 5)    // -3% (최소 5%)
-  ];
-  
-  packages.push({
-    name: "패키지",
+      "✅ 모든 스타트 서비스",
+      "✅ 지급명령 신청",
+      "✅ 본안소송 대리",
+      "✅ 진행상황 실시간 알림",
+      "✅ 성공보수 우대 적용"
+    ],
+    marketingMessage: "🌟 가장 인기 있는 서비스! 대부분의 고객이 선택하는 최적화된 패키지입니다."
+  },
+  package: {
+    name: "집행패키지",
+    price: 0, // 상담 후 견적
     description: "가압류 + 강제집행 중심",
-    fee: executionFee,
-    feeDisplay: executionFeeDisplay,
-    successFee: role === '채권자' 
-      ? `회수금액의 ${executionCreditorRange[0]}~${executionCreditorRange[1]}%`
-      : `협상된 감액의 ${executionDebtorRange[0]}~${executionDebtorRange[1]}%`,
+    successFee: "회수금액의 10% 내외",
     features: [
-      "모든 스탠다드 서비스",
-      "가압류 신청",
-      "강제집행 절차",
-      "재산조사",
-      "맞춤형 전략"
-    ]
-  });
-  
-  return {
-    quoteNumber,
-    amount,
-    counterparty,
-    role,
-    packages,
-    isIndividualQuote
-  };
+      "✅ 모든 스탠다드 서비스",
+      "✅ 가압류/가처분 신청",
+      "✅ 강제집행 절차",
+      "✅ 재산조사 및 추적",
+      "✅ 맞춤형 회수 전략"
+    ],
+    marketingMessage: "🚀 고액 채권이나 복잡한 사건에 최적화된 프리미엄 서비스입니다."
+  }
 }
 
-// 매트릭스 견적서 HTML 이메일 생성 (기존과 동일)
-function createMatrixQuoteEmailHTML(formData: any, quoteData: any): string {
-  const { packages, amount, isIndividualQuote, quoteNumber } = quoteData;
+// 견적서 번호 생성
+function generateQuoteNumber(): string {
+  const now = new Date()
+  return `MH-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`
+}
+
+// 요청된 서비스 타입 감지
+function detectRequestedService(amount: string, summary: string): 'start' | 'standard' | 'package' {
+  const lowerSummary = summary.toLowerCase()
+  
+  // 패키지 서비스 키워드
+  if (lowerSummary.includes('가압류') || lowerSummary.includes('강제집행') || lowerSummary.includes('재산조사')) {
+    return 'package'
+  }
+  
+  // 스탠다드 서비스 키워드
+  if (lowerSummary.includes('소송') || lowerSummary.includes('지급명령')) {
+    return 'standard'
+  }
+  
+  // 채권 금액 기반 추정 (참고용)
+  if (amount.includes('5천만') || amount.includes('1억')) {
+    return 'package'
+  } else if (amount.includes('1천만') || amount.includes('3천만')) {
+    return 'standard'
+  }
+  
+  return 'start' // 기본값
+}
+
+// 서비스별 맞춤 견적서 HTML 생성
+function createServiceQuoteHTML(formData: QuoteRequest, quoteNumber: string): string {
+  const requestedService = formData.requestedService || detectRequestedService(formData.amount, formData.summary || '')
+  const mainService = SERVICE_PRICING[requestedService]
+  
+  // 업셀링을 위한 다른 서비스들
+  const otherServices = Object.entries(SERVICE_PRICING).filter(([key]) => key !== requestedService)
+  
+  const isPackageRequest = requestedService === 'package'
   
   return `
 <!DOCTYPE html>
@@ -403,9 +123,9 @@ function createMatrixQuoteEmailHTML(formData: any, quoteData: any): string {
             max-width: 600px; 
             margin: 0 auto; 
             background: white; 
-            border-radius: 10px;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
         }
         .header { 
             background: linear-gradient(135deg, #fbbf24, #f59e0b); 
@@ -421,71 +141,56 @@ function createMatrixQuoteEmailHTML(formData: any, quoteData: any): string {
         .content {
             padding: 30px;
         }
-        .amount-info {
-            background: #fef3c7;
+        .customer-info {
+            background: #f8f9fa;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 30px;
-            text-align: center;
         }
-        .package {
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            margin-bottom: 20px;
+        .main-service {
+            border: 3px solid #fbbf24;
+            border-radius: 15px;
+            margin-bottom: 30px;
             overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .package.recommended {
-            border-color: #fbbf24;
-            transform: scale(1.02);
-        }
-        .package-header {
-            padding: 20px;
-            background: #f9fafb;
-        }
-        .package-header.recommended {
-            background: #fef3c7;
             position: relative;
         }
-        .recommended-badge {
+        .main-service::before {
+            content: "🌟 선택하신 서비스";
             position: absolute;
             top: -1px;
-            right: 20px;
+            left: 20px;
             background: #fbbf24;
             color: black;
-            padding: 4px 12px;
-            border-radius: 0 0 8px 8px;
-            font-size: 12px;
+            padding: 8px 16px;
+            border-radius: 0 0 10px 10px;
+            font-size: 14px;
             font-weight: bold;
         }
-        .package-name {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 0 0 5px 0;
+        .service-header {
+            background: #fef3c7;
+            padding: 30px 20px 20px 20px;
+            text-align: center;
         }
-        .package-desc {
-            color: #666;
-            margin: 0;
-        }
-        .package-pricing {
-            padding: 20px;
-            background: white;
-        }
-        .fee {
+        .service-name {
             font-size: 28px;
             font-weight: bold;
-            color: #f59e0b;
+            color: #92400e;
             margin-bottom: 10px;
         }
-        .success-fee {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 20px;
+        .service-price {
+            font-size: 32px;
+            font-weight: bold;
+            color: #dc2626;
+            margin-bottom: 10px;
+        }
+        .service-body {
+            padding: 25px;
+            background: white;
         }
         .features {
             list-style: none;
             padding: 0;
-            margin: 0;
+            margin: 0 0 20px 0;
         }
         .features li {
             padding: 8px 0;
@@ -494,24 +199,56 @@ function createMatrixQuoteEmailHTML(formData: any, quoteData: any): string {
         .features li:last-child {
             border-bottom: none;
         }
-        .features li:before {
-            content: "✓";
-            color: #10b981;
+        .marketing-box {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #3b82f6;
+            margin: 20px 0;
+        }
+        .upsell-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e5e7eb;
+        }
+        .other-service {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .other-service-header {
+            background: #f9fafb;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .other-service-price {
+            font-size: 18px;
             font-weight: bold;
-            margin-right: 10px;
+            color: #059669;
+        }
+        .package-notice {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid #f59e0b;
+            margin: 20px 0;
+            text-align: center;
         }
         .contact-info {
             background: #1f2937;
             color: white;
-            padding: 25px;
+            padding: 30px;
             text-align: center;
+            margin-top: 30px;
         }
-        .individual-quote {
-            background: #dbeafe;
+        .next-steps {
+            background: #f0f9ff;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin: 20px 0;
-            text-align: center;
         }
     </style>
 </head>
@@ -519,7 +256,7 @@ function createMatrixQuoteEmailHTML(formData: any, quoteData: any): string {
     <div class="container">
         <div class="header">
             <div class="logo">💰 머니히어로</div>
-            <h1 style="margin: 0 0 10px 0; font-size: 24px;">채권추심 견적서</h1>
+            <h1 style="margin: 0 0 10px 0; font-size: 24px;">채권추심 서비스 견적서</h1>
             <p style="margin: 10px 0 0 0;">전문 변호사와 함께하는 체계적인 채권 회수</p>
             <div style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; font-size: 12px; display: inline-block; margin-top: 10px;">
                 견적서 #${quoteNumber}
@@ -527,316 +264,241 @@ function createMatrixQuoteEmailHTML(formData: any, quoteData: any): string {
         </div>
         
         <div class="content">
-            <div class="amount-info">
-                <h2 style="margin: 0 0 10px 0; color: #92400e;">💡 ${amount} 채권 견적</h2>
-                <p style="margin: 0; color: #92400e;">
-                    <strong>${formData.name}님 (${formData.role})</strong><br>
-                    상대방: ${formData.counterparty} | 연락처: ${formData.phone}
-                </p>
+            <div class="customer-info">
+                <h3 style="margin: 0 0 15px 0; color: #1f2937;">📋 의뢰인 정보</h3>
+                <p style="margin: 5px 0;"><strong>성함:</strong> ${formData.name}</p>
+                <p style="margin: 5px 0;"><strong>구분:</strong> ${formData.role}</p>
+                <p style="margin: 5px 0;"><strong>상대방:</strong> ${formData.counterparty}</p>
+                <p style="margin: 5px 0;"><strong>채권금액:</strong> ${formData.amount}</p>
+                <p style="margin: 5px 0;"><strong>연락처:</strong> ${formData.phone}</p>
             </div>
 
-            ${isIndividualQuote ? `
-            <div class="individual-quote">
-                <h3 style="margin: 0 0 10px 0; color: #0369a1;">📞 개별 견적 안내</h3>
-                <p style="margin: 0;">1억원 이상 고액 채권은 사건의 복잡성을 고려하여<br>
-                <strong>개별 상담 후 맞춤 견적</strong>을 제공해드립니다.</p>
+            ${isPackageRequest ? `
+            <div class="package-notice">
+                <h3 style="margin: 0 0 15px 0; color: #92400e;">🚀 집행패키지 문의 주셔서 감사합니다!</h3>
+                <p style="margin: 0; font-size: 16px; color: #78350f;">
+                    고액 채권 및 복잡한 사건은 <strong>개별 상담 후 맞춤 견적</strong>을 제공해드립니다.<br>
+                    담당 변호사가 24시간 내 연락드려 상세한 전략과 정확한 비용을 안내해드리겠습니다.
+                </p>
+            </div>
+            ` : `
+            <div class="main-service">
+                <div class="service-header">
+                    <div class="service-name">${mainService.name} 서비스</div>
+                    <div class="service-price">${mainService.price}만원</div>
+                    <div style="color: #6b7280; font-size: 14px;">${mainService.description}</div>
+                </div>
+                <div class="service-body">
+                    <ul class="features">
+                        ${mainService.features.map(feature => `<li>${feature}</li>`).join('')}
+                    </ul>
+                    <div style="text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <strong style="color: #059669;">성공보수: ${mainService.successFee}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="marketing-box">
+                <h4 style="margin: 0 0 10px 0; color: #1e40af;">💡 ${mainService.name} 서비스 선택 시</h4>
+                <p style="margin: 0; color: #1e3a8a;">${mainService.marketingMessage}</p>
+            </div>
+            `}
+
+            ${!isPackageRequest ? `
+            <div class="upsell-section">
+                <h3 style="margin: 0 0 20px 0; color: #1f2937;">🔄 다른 서비스 옵션</h3>
+                ${otherServices.map(([key, service]) => `
+                <div class="other-service">
+                    <div class="other-service-header">
+                        <div>
+                            <strong>${service.name}</strong> - ${service.description}
+                        </div>
+                        <div class="other-service-price">
+                            ${service.price === 0 ? '상담 후 견적' : `${service.price}만원`}
+                        </div>
+                    </div>
+                </div>
+                `).join('')}
+                <p style="margin: 15px 0 0 0; font-size: 14px; color: #6b7280; text-align: center;">
+                    💬 상담 시 서비스 변경 가능합니다
+                </p>
             </div>
             ` : ''}
 
-            ${packages.map((pkg: any, index: number) => `
-            <div class="package ${index === 1 ? 'recommended' : ''}">
-                <div class="package-header ${index === 1 ? 'recommended' : ''}">
-                    ${index === 1 ? '<div class="recommended-badge">⭐ 추천</div>' : ''}
-                    <div class="package-name">${pkg.name}</div>
-                    <div class="package-desc">${pkg.description}</div>
-                </div>
-                <div class="package-pricing">
-                    <div class="fee">착수금: ${pkg.feeDisplay}</div>
-                    <div class="success-fee">성공보수: ${pkg.successFee}</div>
-                    <ul class="features">
-                        ${pkg.features.map((feature: string) => `<li>${feature}</li>`).join('')}
-                    </ul>
-                </div>
-            </div>
-            `).join('')}
-
             ${formData.summary ? `
-            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 25px 0;">
                 <h3 style="margin: 0 0 15px 0; color: #1f2937;">📝 사건 개요</h3>
                 <p style="margin: 0; color: #4b5563;">${formData.summary.replace(/\n/g, '<br>')}</p>
             </div>
             ` : ''}
 
-            <div style="background: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="margin: 0 0 10px 0; color: #0369a1;">📞 다음 단계</h3>
+            <div class="next-steps">
+                <h3 style="margin: 0 0 15px 0; color: #0369a1;">📞 다음 단계</h3>
                 <p style="margin: 5px 0;">✅ 담당 변호사가 <strong>24시간 내</strong> 연락드립니다</p>
                 <p style="margin: 5px 0;">✅ 상세 상담 및 증빙자료 검토</p>
-                <p style="margin: 5px 0;">✅ 최종 견적 확정 및 계약 진행</p>
+                <p style="margin: 5px 0;">✅ 최종 견적 확정 및 서비스 진행</p>
+                ${!isPackageRequest ? '<p style="margin: 5px 0;">✅ 상담 시 서비스 업그레이드 가능</p>' : ''}
             </div>
         </div>
         
         <div class="contact-info">
             <h3 style="margin: 0 0 15px 0; color: #fbbf24;">📞 연락처</h3>
-            <p style="margin: 5px 0; font-size: 18px;"><strong>02-3477-9650</strong></p>
+            <p style="margin: 5px 0; font-size: 18px;"><strong>02-1234-5678</strong></p>
             <p style="margin: 5px 0;">평일 09:00-18:00 | 카카오톡 @머니히어로</p>
             <p style="margin: 15px 0 5px 0; font-size: 12px; opacity: 0.8;">
-                © 2025 머니히어로 | 임앤리 법률사무소. 모든 권리 보유.<br>
-                사업자등록번호: 654-39-00409 | 발급일: ${new Date().toLocaleDateString('ko-KR')}
+                © 2025 머니히어로. 모든 권리 보유.<br>
+                사업자등록번호: 123-45-67890 | 발급일: ${new Date().toLocaleDateString('ko-KR')}
             </p>
         </div>
     </div>
 </body>
 </html>
-  `;
+  `
 }
 
 export async function POST(req: NextRequest) {
   try {
-    console.log('=== 매트릭스 견적 API 시작 ===');
+    console.log('=== 서비스별 견적 API 시작 ===')
     
-    // 1. 요청 본문 파싱
-    let body;
-    try {
-      body = await req.json();
-      console.log('Body 파싱 성공:', body);
-    } catch (parseError) {
-      console.error('JSON 파싱 오류:', parseError);
-      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+    const body = await req.json() as QuoteRequest
+    const ip = req.headers.get('x-forwarded-for') || 'unknown'
+    const ua = req.headers.get('user-agent') || 'unknown'
+
+    // 스팸 방지
+    if ((body as any).company) {
+      console.log('스팸 감지, 차단됨')
+      return NextResponse.json({ ok: true })
     }
 
-    // 2. 스팸 방지 체크
-    if (body.company) {
-      console.log('스팸 감지, 차단됨');
-      return NextResponse.json({ error: 'Spam detected' }, { status: 400 });
-    }
-
-    // 3. 필수 필드 검증
-    const required = ['name', 'email', 'phone', 'role', 'counterparty', 'amount'];
-    const missing = required.filter(k => !body?.[k]);
+    // 필수 필드 검증
+    const required = ['name', 'email', 'phone', 'role', 'counterparty', 'amount']
+    const missing = required.filter(k => !body?.[k as keyof QuoteRequest])
     if (missing.length > 0) {
-      console.log('필수 필드 누락:', missing);
       return NextResponse.json({ 
         error: `필수 필드가 누락되었습니다: ${missing.join(', ')}` 
-      }, { status: 400 });
-    }
-    console.log('필수 필드 검증 통과');
-
-    // 4. 채무자 서비스 체크 (새로 추가)
-    if (body.role === '채무자') {
-      console.log('채무자 서비스 요청 - 준비중 안내');
-      
-      const debtorResult = await handleDebtorInquiry(body);
-      
-      return NextResponse.json({ 
-        error: '채무자 서비스 준비중',
-        message: '채무자를 위한 서비스는 현재 준비 중입니다. 담당자가 빠른 시일 내 연락드리겠습니다.',
-        debtorService: true,
-        emailSent: debtorResult.emailSent,
-        details: debtorResult.reason
-      }, { status: 200 }); // 200으로 변경 (성공적인 처리)
+      }, { status: 400 })
     }
 
-    // 5. 매트릭스 견적 계산 (채권자만)
-    const quoteData = calculateMatrixQuote(body.amount, body.counterparty, body.role);
-    console.log('매트릭스 견적 계산 완료:', {
-      quoteNumber: quoteData.quoteNumber,
-      amount: quoteData.amount,
-      packagesCount: quoteData.packages.length
-    });
+    const quoteNumber = generateQuoteNumber()
+    const requestedService = body.requestedService || detectRequestedService(body.amount, body.summary || '')
+    const selectedService = SERVICE_PRICING[requestedService]
 
-    // 6. 노션 데이터베이스 저장 시도
-    let notionResult = null;
+    // 1. Firebase에 데이터 저장
     try {
-      notionResult = await saveToNotion(body, quoteData);
-      if (notionResult) {
-        console.log('노션 저장 성공:', notionResult.id);
-      }
-    } catch (notionError) {
-      console.error('노션 저장 실패 (계속 진행):', notionError);
-      // 노션 저장 실패해도 이메일은 계속 진행
+      const docRef = await db.collection('quote-requests').add({
+        ...body,
+        requestedService,
+        quoteNumber,
+        selectedServicePrice: selectedService.price,
+        meta: { ip, ua },
+        createdAt: new Date(),
+        status: 'new',
+      })
+      console.log('Firebase 저장 성공:', docRef.id)
+    } catch (firebaseError) {
+      console.error('Firebase 저장 실패:', firebaseError)
+      // Firebase 실패해도 계속 진행
     }
 
-    // 7. 환경변수 확인
-    const envCheck = {
-      SMTP_HOST: !!process.env.SMTP_HOST,
-      SMTP_USER: !!process.env.SMTP_USER,
-      SMTP_PASS: !!process.env.SMTP_PASS,
-      MAIL_TO: !!process.env.MAIL_TO,
-      MAIL_FROM: !!process.env.MAIL_FROM,
-      NOTION_TOKEN: !!process.env.NOTION_TOKEN,
-      NOTION_DATABASE_ID: !!process.env.NOTION_DATABASE_ID
-    };
-    console.log('환경변수 상태:', envCheck);
+    // 2. SMTP 설정
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT || 587),
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    })
 
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.error('SMTP 환경변수 누락');
-      return NextResponse.json({ 
-        error: 'SMTP 설정이 누락되었습니다.',
-        envCheck 
-      }, { status: 500 });
-    }
+    const toOps = process.env.MAIL_TO || 'ops@example.com'
+    const fromAddr = process.env.MAIL_FROM || 'noreply@moneyhero.co.kr'
 
-    // 8. SMTP 설정
-    console.log('SMTP 설정 시작');
-    let transporter;
-    try {
-      transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT || 587),
-        secure: process.env.SMTP_PORT === '465',
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS,
-        },
-      });
-      console.log('SMTP 트랜스포터 생성 완료');
-    } catch (smtpError) {
-      console.error('SMTP 설정 오류:', smtpError);
-      return NextResponse.json({ 
-        error: 'SMTP 설정 오류',
-        details: smtpError instanceof Error ? smtpError.message : String(smtpError)
-      }, { status: 500 });
-    }
-
-    // 9. SMTP 연결 테스트
-    console.log('SMTP 연결 테스트 시작');
-    try {
-      await transporter.verify();
-      console.log('SMTP 연결 성공');
-    } catch (verifyError) {
-      console.error('SMTP 연결 실패:', verifyError);
-      return NextResponse.json({ 
-        error: 'SMTP 연결 실패',
-        details: verifyError instanceof Error ? verifyError.message : String(verifyError)
-      }, { status: 500 });
-    }
-
-    const toOps = process.env.MAIL_TO || 'ops@example.com';
-    const fromAddr = process.env.MAIL_FROM || 'noreply@moneyhero.co.kr';
-
-    // 10. 관리자 메일 발송 (간단 버전)
-    console.log('관리자 메일 발송 시작');
-    try {
-      const recommendedPackage = quoteData.packages[1]; // 스탠다드 패키지
-      
-      await transporter.sendMail({
-        from: fromAddr,
-        to: toOps,
-        subject: `🚨 [견적요청] ${body.role} | ${body.name} | ${body.amount} | 추천: ${recommendedPackage.feeDisplay}`,
-        html: `
-          <div style="font-family: system-ui; line-height: 1.6; max-width: 600px;">
-            <h2 style="color: #dc2626;">🚨 새로운 매트릭스 견적 요청</h2>
-            
-            ${notionResult ? `
-            <div style="background: #d1fae5; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
-              ✅ <strong>노션 저장 완료:</strong> <a href="https://notion.so/${notionResult.id.replace(/-/g, '')}" target="_blank">노션에서 보기</a>
-            </div>
-            ` : `
-            <div style="background: #fef3c7; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
-              ⚠️ <strong>노션 저장 실패:</strong> 수동으로 노션에 등록 필요
-            </div>
-            `}
-            
-            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-              <tr style="background: #f3f4f6;">
-                <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">이름</td>
-                <td style="padding: 10px; border: 1px solid #d1d5db;">${body.name}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">연락처</td>
-                <td style="padding: 10px; border: 1px solid #d1d5db;">${body.phone}</td>
-              </tr>
-              <tr style="background: #f3f4f6;">
-                <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">이메일</td>
-                <td style="padding: 10px; border: 1px solid #d1d5db;">${body.email}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">구분</td>
-                <td style="padding: 10px; border: 1px solid #d1d5db;">${body.role}</td>
-              </tr>
-              <tr style="background: #f3f4f6;">
-                <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">상대방</td>
-                <td style="padding: 10px; border: 1px solid #d1d5db;">${body.counterparty}</td>
-              </tr>
-              <tr>
-                <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">채권금액</td>
-                <td style="padding: 10px; border: 1px solid #d1d5db; color: #dc2626; font-weight: bold;">${body.amount}</td>
-              </tr>
-              <tr style="background: #fef3c7;">
-                <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">추천 패키지</td>
-                <td style="padding: 10px; border: 1px solid #d1d5db; color: #92400e; font-weight: bold;">
-                  ${recommendedPackage.name} - 착수금: ${recommendedPackage.feeDisplay}
-                </td>
-              </tr>
-            </table>
-
-            <h3>💰 3가지 패키지 견적:</h3>
-            <ul>
-              ${quoteData.packages.map((pkg: any) => `
-                <li><strong>${pkg.name}</strong>: 착수금 ${pkg.feeDisplay}, 성공보수 ${pkg.successFee}</li>
-              `).join('')}
-            </ul>
-
-            ${body.summary ? `
-            <h3>📝 사건 개요:</h3>
-            <div style="background: #f9fafb; padding: 15px; border-left: 4px solid #6b7280; border-radius: 4px;">
-              ${body.summary.replace(/\n/g, '<br>')}
-            </div>
-            ` : ''}
-            
-            <p style="margin-top: 20px; padding: 15px; background: #dbeafe; border-radius: 8px;">
-              💡 <strong>할 일:</strong> 24시간 내 ${body.phone}로 연락하여 상세 상담 진행<br>
-              📋 <strong>견적번호:</strong> ${quoteData.quoteNumber}
-            </p>
+    // 3. 관리자 알림 메일
+    await transporter.sendMail({
+      from: fromAddr,
+      to: toOps,
+      subject: `🚨 [${selectedService.name} 견적] ${body.role} | ${body.name} | ${body.amount} | ${selectedService.price === 0 ? '상담견적' : selectedService.price + '만원'}`,
+      html: `
+        <div style="font-family: system-ui; line-height: 1.6;">
+          <h2 style="color: #dc2626;">🚨 새로운 ${selectedService.name} 서비스 견적 요청</h2>
+          
+          <div style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="margin: 0 0 10px 0; color: #92400e;">선택 서비스</h3>
+            <p style="margin: 0; font-size: 18px;"><strong>${selectedService.name}</strong> - ${selectedService.price === 0 ? '상담 후 견적' : selectedService.price + '만원'}</p>
           </div>
-        `,
-      });
-      console.log('관리자 메일 발송 성공');
-    } catch (adminMailError) {
-      console.error('관리자 메일 발송 실패:', adminMailError);
-      return NextResponse.json({ 
-        error: '관리자 메일 발송 실패',
-        details: adminMailError instanceof Error ? adminMailError.message : String(adminMailError)
-      }, { status: 500 });
-    }
+          
+          <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+            <tr style="background: #f3f4f6;">
+              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">이름</td>
+              <td style="padding: 10px; border: 1px solid #d1d5db;">${body.name}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">연락처</td>
+              <td style="padding: 10px; border: 1px solid #d1d5db;">${body.phone}</td>
+            </tr>
+            <tr style="background: #f3f4f6;">
+              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">이메일</td>
+              <td style="padding: 10px; border: 1px solid #d1d5db;">${body.email}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">구분</td>
+              <td style="padding: 10px; border: 1px solid #d1d5db;">${body.role}</td>
+            </tr>
+            <tr style="background: #f3f4f6;">
+              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">상대방</td>
+              <td style="padding: 10px; border: 1px solid #d1d5db;">${body.counterparty}</td>
+            </tr>
+            <tr>
+              <td style="padding: 10px; border: 1px solid #d1d5db; font-weight: bold;">채권금액</td>
+              <td style="padding: 10px; border: 1px solid #d1d5db;">${body.amount}</td>
+            </tr>
+          </table>
 
-    // 11. 고객 매트릭스 견적 메일 발송
-    console.log('고객 매트릭스 견적 메일 발송 시작');
-    try {
-      const matrixEmailHTML = createMatrixQuoteEmailHTML(body, quoteData);
-      
-      await transporter.sendMail({
-        from: fromAddr,
-        to: body.email,
-        subject: `[머니히어로] ${body.name}님 맞춤 채권추심 견적서 📋 (3가지 패키지)`,
-        html: matrixEmailHTML,
-      });
-      console.log('고객 매트릭스 견적 메일 발송 성공');
-    } catch (customerMailError) {
-      console.error('고객 메일 발송 실패:', customerMailError);
-      // 고객 메일은 실패해도 일단 성공 응답 (관리자 메일은 이미 성공)
-      console.log('고객 메일 실패했지만 관리자 메일은 성공, 계속 진행');
-    }
+          ${body.summary ? `
+          <h3>📝 사건 개요:</h3>
+          <div style="background: #f9fafb; padding: 15px; border-left: 4px solid #6b7280; border-radius: 4px;">
+            ${body.summary.replace(/\n/g, '<br>')}
+          </div>
+          ` : ''}
+          
+          <p style="margin-top: 20px; padding: 15px; background: #dbeafe; border-radius: 8px;">
+            💡 <strong>할 일:</strong> 24시간 내 ${body.phone}로 연락하여 ${selectedService.name} 서비스 상담 진행<br>
+            📋 <strong>견적번호:</strong> ${quoteNumber}
+          </p>
+        </div>
+      `,
+    })
 
-    console.log('=== 매트릭스 견적 API 완료 ===');
+    // 4. 고객용 견적서 메일
+    const isPackageRequest = requestedService === 'package'
+    const emailHTML = createServiceQuoteHTML(body, quoteNumber)
+    
+    await transporter.sendMail({
+      from: fromAddr,
+      to: body.email,
+      subject: isPackageRequest 
+        ? `[머니히어로] ${body.name}님 집행패키지 상담 예약 완료 📞`
+        : `[머니히어로] ${body.name}님 ${selectedService.name} 서비스 견적서 📋`,
+      html: emailHTML,
+    })
+
+    console.log('=== 서비스별 견적 API 완료 ===')
     return NextResponse.json({ 
       ok: true, 
-      quoteNumber: quoteData.quoteNumber,
-      packages: quoteData.packages.length,
-      notion: notionResult ? { saved: true, id: notionResult.id } : { saved: false },
-      message: '3가지 패키지 견적이 발송되었습니다.' + (notionResult ? ' (노션 저장 완료)' : ' (노션 저장 실패)')
-    });
+      quoteNumber,
+      service: selectedService.name,
+      price: selectedService.price,
+      message: isPackageRequest 
+        ? '집행패키지 상담이 예약되었습니다. 담당자가 연락드리겠습니다.'
+        : `${selectedService.name} 서비스 견적서가 발송되었습니다.`
+    })
 
   } catch (error) {
-    console.error('=== 예상치 못한 오류 ===');
-    console.error('Error:', error);
-    console.error('Stack:', error instanceof Error ? error.stack : 'No stack trace');
-    console.error('========================');
-    
+    console.error('견적 API 오류:', error)
     return NextResponse.json({ 
       error: '서버 오류가 발생했습니다.',
-      message: error instanceof Error ? error.message : String(error),
-      type: error instanceof Error ? error.constructor.name : typeof error
-    }, { status: 500 });
+      message: error instanceof Error ? error.message : String(error)
+    }, { status: 500 })
   }
 }

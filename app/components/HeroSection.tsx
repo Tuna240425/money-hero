@@ -192,11 +192,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
             </div>
             <div className="flex items-center">
               <Zap className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-400 mr-2 flex-shrink-0" />
-              <span>당일 가압류 진단</span>
-            </div>
-            <div className="flex items-center">
-              <Star className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-400 mr-2 flex-shrink-0" />
-              <span>회수율 85%</span>
+              <span>당일 진단</span>
             </div>
           </div>
         </div>
