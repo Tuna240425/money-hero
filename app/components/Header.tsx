@@ -5,7 +5,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Sun, Moon, MessageCircle, Phone } from 'lucide-react'
+import { Menu, X, Sun, Moon, MessageCircle, Edit } from 'lucide-react'
 
 interface NavigationItem {
   label: string
@@ -71,6 +71,43 @@ export default function Header() {
 
   const isActive = (href: string) => pathname === href
 
+  // 상담 신청 버튼 클릭 시 요금 섹션으로 스크롤
+  const handleConsultationClick = () => {
+    setOpen(false) // 모바일 메뉴 먼저 닫기
+    
+    if (pathname === '/') {
+      // 메인 페이지에 있을 때는 요금 섹션으로 스크롤
+      setTimeout(() => {
+        const pricingSection = document.getElementById('pricing-section')
+        if (pricingSection) {
+          pricingSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          })
+        } else {
+          // ID로 찾지 못한 경우 요금 관련 텍스트로 찾기
+          const allSections = document.querySelectorAll('section')
+          const sectionsArray = Array.from(allSections)
+          
+          for (const section of sectionsArray) {
+            const textContent = section.textContent || ''
+            if (textContent.includes('투명한 요금') || 
+                textContent.includes('요금 체계')) {
+              section.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start' 
+              })
+              break
+            }
+          }
+        }
+      }, 300)
+    } else {
+      // 다른 페이지에 있을 때는 메인 페이지의 요금 섹션으로 이동
+      window.location.href = '/#pricing-section'
+    }
+  }
+
   return (
     <>
       <header
@@ -83,7 +120,7 @@ export default function Header() {
       >
         <div className="max-w-6xl mx-auto px-4 md:px-6">
           <div className="flex items-center py-4 md:py-6">
-            {/* 로고: 투명 배경 PNG 사용 */}
+            {/* 로고 : 투명 배경 PNG 사용 */}
             <Link href="/" aria-label="홈으로" className="flex items-center gap-2" data-analytics="nav_logo">
               {/* 라이트 모드 로고 */}
               <Image
@@ -160,16 +197,16 @@ export default function Header() {
                     <MessageCircle className="w-4 h-4" /> 카톡 상담
                   </span>
                 </Link>
-                <Link
-                  href="tel:02-3477-9650"
+                <button
+                  onClick={handleConsultationClick}
                   className="px-4 py-2 rounded-md text-sm font-semibold transition-opacity hover:opacity-90"
                   style={{ background: 'var(--nav-fg)', color: 'var(--nav-bg)' }}
                   data-analytics="nav_cta"
                 >
                   <span className="inline-flex items-center gap-2">
-                    <Phone className="w-4 h-4" /> 무료 진단
+                    <Edit className="w-4 h-4" /> 상담 신청
                   </span>
-                </Link>
+                </button>
               </div>
 
               {/* 모바일 햄버거 버튼 */}
@@ -255,15 +292,14 @@ export default function Header() {
               >
                 카톡 상담
               </Link>
-              <Link
-                href="tel:02-3477-9650"
+              <button
+                onClick={handleConsultationClick}
                 className="flex-1 px-4 py-3 text-center rounded-md font-semibold transition-opacity hover:opacity-90"
                 style={{ background: 'var(--nav-fg)', color: 'var(--nav-bg)' }}
-                onClick={() => setOpen(false)}
                 data-analytics="nav_cta_mobile"
               >
-                전화 상담
-              </Link>
+                상담 신청
+              </button>
             </div>
           </div>
         </div>

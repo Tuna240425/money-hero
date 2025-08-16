@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import { Phone, MessageCircle, ArrowRight, Shield, Zap, Star, ChevronDown } from "lucide-react"
+import { Phone, MessageCircle, ArrowRight, Shield, Zap, Star, ChevronDown, CheckCircle2 } from "lucide-react"
 
 interface FormData {
   name: string
@@ -74,10 +74,35 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
           <span className="inline-block">5분&nbsp;무료&nbsp;진단&nbsp;신청</span>
         </CardTitle>
         <CardDescription className="text-center text-gray-800 font-medium text-sm sm:text-base">
-          <span className="inline-block">머니히어로가&nbsp;직접&nbsp;상담해드립니다</span>
+          <span className="inline-block">투명한&nbsp;고정가격으로&nbsp;안내해드립니다</span>
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6">
+        {/* 가격 미리보기 */}
+        <div className="mb-6 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+          <h4 className="font-semibold text-yellow-800 mb-3 text-center">💰 투명한 고정가격</h4>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between items-center">
+              <span className="text-slate-600">스타트:</span>
+              <span className="font-semibold text-slate-900">22만원</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-600">스탠다드:</span>
+              <span className="font-semibold text-slate-900">55만원</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-600">집행패키지:</span>
+              <span className="font-semibold text-slate-900">상담 후 견적</span>
+            </div>
+            <div className="pt-2 border-t border-yellow-200">
+              <p className="text-xs text-yellow-700">
+                + 성공보수: 회수금액의 10% 내외<br/>
+                <span className="font-semibold">채권 금액과 관계없이 동일한 가격!</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="name">이름 *</Label>
@@ -99,19 +124,21 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
             />
           </div>
           <div>
-            <Label htmlFor="amount">채권금액</Label>
+            <Label htmlFor="amount">채권금액 (참고용)</Label>
             <Select onValueChange={(value: string) => setFormData({ ...formData, amount: value })}>
               <SelectTrigger>
                 <SelectValue placeholder="금액 구간 선택" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="under-500">500만원 미만</SelectItem>
-                <SelectItem value="500-1000">500만원 ~ 1천만원</SelectItem>
-                <SelectItem value="1000-3000">1천만원 ~ 3천만원</SelectItem>
-                <SelectItem value="3000-5000">3천만원 ~ 5천만원</SelectItem>
-                <SelectItem value="over-5000">5천만원 이상</SelectItem>
+                <SelectItem value="~500만원">~500만원</SelectItem>
+                <SelectItem value="500만~1천만">500만원 ~ 1천만원</SelectItem>
+                <SelectItem value="1천만~3천만">1천만원 ~ 3천만원</SelectItem>
+                <SelectItem value="3천만~5천만">3천만원 ~ 5천만원</SelectItem>
+                <SelectItem value="5천만~1억">5천만원 ~ 1억원</SelectItem>
+                <SelectItem value="1억원 이상">1억원 이상</SelectItem>
               </SelectContent>
             </Select>
+            <p className="text-xs text-slate-500 mt-1">💡 금액과 관계없이 서비스별 동일한 가격입니다</p>
           </div>
           <div>
             <Label htmlFor="counterpartyType">상대방 유형</Label>
@@ -170,25 +197,51 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
         {/* Left: Text */}
         <div className="text-white space-y-3 sm:space-y-4 md:space-y-6 max-w-[480px] mx-auto md:ml-auto md:mr-0">
           <Badge className="bg-yellow-400 text-black hover:bg-black hover:text-white font-black px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 inline-flex items-center text-sm sm:text-base lg:text-lg shadow-lg border-2 border-yellow-500 transition-colors duration-300">
-            <Zap className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2 sm:mr-3" />
-            <span className="text-xs sm:text-sm lg:text-base">오늘 17시 이전 접수 시, 당일 회신</span>
+            <Shield className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-2 sm:mr-3" />
+            <span className="text-xs sm:text-sm lg:text-base">채권금액 관계없이 투명한 고정가격</span>
           </Badge>
           
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight">
             빼앗긴&nbsp;돈,<br />
-            <span className="text-yellow-400">빠르게!</span><br />
+            <span className="text-yellow-400">명확한&nbsp;가격으로!</span><br />
             <span className="text-yellow-400">합법적으로!</span><br />
             되찾아드립니다
           </h1>
           
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 leading-relaxed">
-            법의 힘으로 당신의 권리를 지키는 <span className="text-yellow-400 font-bold">머니히어로</span>
+            복잡한 금액별 계산 없이 <span className="text-yellow-400 font-bold">투명한 고정가격</span>으로 안심하세요
           </p>
+          
+          {/* 간단한 가격 미리보기 */}
+          <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/20">
+            <h3 className="text-lg font-bold text-yellow-400 mb-3">💰 투명한 가격표</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-white/80">스타트:</span>
+                <span className="text-white font-semibold">22만원</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-white/80">스탠다드:</span>
+                <span className="text-yellow-400 font-semibold">55만원 ⭐</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-white/80">집행패키지:</span>
+                <span className="text-white font-semibold">상담견적</span>
+              </div>
+              <div className="pt-2 border-t border-white/20">
+                <p className="text-xs text-white/70">+ 성공보수 10% 내외</p>
+              </div>
+            </div>
+          </div>
           
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 text-sm sm:text-base lg:text-lg text-white/90">
             <div className="flex items-center">
               <Shield className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-400 mr-2 flex-shrink-0" />
               <span>변호사 직접 수행</span>
+            </div>
+            <div className="flex items-center">
+              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-400 mr-2 flex-shrink-0" />
+              <span>고정가격 시스템</span>
             </div>
             <div className="flex items-center">
               <Zap className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-400 mr-2 flex-shrink-0" />

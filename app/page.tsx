@@ -1,7 +1,7 @@
 // app/page.tsx
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import HeroSection from "./components/HeroSection"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -40,6 +40,23 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ question, answer, isOpen,
 export default function MoneyHeroLanding() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [openConsult, setOpenConsult] = useState(false)
+  const [selectedService, setSelectedService] = useState<'start' | 'standard' | 'package' | null>(null)
+
+  // URL 해시 처리 (#pricing-section으로 직접 접근 시)
+  useEffect(() => {
+    const hash = window.location.hash
+    if (hash === '#pricing-section') {
+      setTimeout(() => {
+        const pricingSection = document.getElementById('pricing-section')
+        if (pricingSection) {
+          pricingSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          })
+        }
+      }, 500) // 페이지 로드 후 스크롤
+    }
+  }, [])
 
   // 연락처 기능들
   const handlePhoneCall = () => {
@@ -55,9 +72,12 @@ export default function MoneyHeroLanding() {
     setOpenConsult(true)
   }
 
-  const handleConsultation = () => {
+  const handleConsultation = (serviceType?: 'start' | 'standard' | 'package') => {
     // 상담 신청 처리
-    handleFreeDiagnosis()
+    if (serviceType) {
+      setSelectedService(serviceType)
+    }
+    setOpenConsult(true)
   }
 
   return (
@@ -92,7 +112,7 @@ export default function MoneyHeroLanding() {
       </div>
 
       {/* 히어로 */}
-      <HeroSection onFormSubmit={handleConsultation} />
+      <HeroSection onFormSubmit={() => handleConsultation()} />
 
       {/* 문제 인식 섹션 */}
       <section id="next-section" className="py-24 md:py-32 bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-yellow-950/30 dark:to-orange-900/20 relative overflow-hidden">
@@ -351,7 +371,7 @@ export default function MoneyHeroLanding() {
       </section>
 
       {/* 요금 섹션 */}
-      <section className="py-24 md:py-32 bg-background">
+      <section id="pricing-section" className="py-24 md:py-32 bg-background">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-16 md:mb-20">
             <div className="inline-block bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 px-6 py-2 rounded-full text-sm font-bold mb-6">
@@ -390,7 +410,7 @@ export default function MoneyHeroLanding() {
                   </li>
                 </ul>
                 <Button 
-                  onClick={handleConsultation}
+                  onClick={() => handleConsultation('start')}
                   className="w-full mt-6 font-bold bg-foreground hover:bg-foreground/90 text-background"
                 >
                   상담 신청
@@ -427,7 +447,7 @@ export default function MoneyHeroLanding() {
                   </li>
                 </ul>
                 <Button 
-                  onClick={handleConsultation}
+                  onClick={() => handleConsultation('standard')}
                   className="w-full mt-6 font-bold bg-yellow-400 hover:bg-yellow-500 text-black"
                 >
                   상담 신청
@@ -469,7 +489,7 @@ export default function MoneyHeroLanding() {
                   </li>
                 </ul>
                 <Button 
-                  onClick={handleConsultation}
+                  onClick={() => handleConsultation('package')}
                   className="w-full mt-6 font-bold bg-foreground hover:bg-foreground/90 text-background"
                 >
                   상담 신청
@@ -538,35 +558,17 @@ export default function MoneyHeroLanding() {
               무료 진단으로 회수 가능성을 확인해보세요
             </p>
 
-            <div className="flex flex-col lg:flex-row gap-6 justify-center items-center mb-16">
-              <Button 
-                onClick={handleFreeDiagnosis}
-                className="bg-black hover:bg-gray-800 text-white px-12 py-6 text-xl font-black rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 min-w-[280px]"
-              >
-                <Clock className="w-6 h-6 mr-3" />
-                5분 무료 진단 시작
-              </Button>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  onClick={handleKakaoTalk}
-                  variant="outline" 
-                  className="border-2 border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg bg-white/90 backdrop-blur-sm font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300"
-                >
-                  <MessageCircle className="w-5 h-5 mr-2" />
-                  카톡 상담
-                </Button>
+
               </div>
-            </div>
-
-            <div className="grid sm:grid-cols-3 gap-8 bg-black/10 backdrop-blur-sm rounded-3xl p-8 shadow-2xl">
-
-            </div>
           </div>
-        </div>
       </section>
 
-      <FreeDiagnosisModal open={openConsult} setOpen={setOpenConsult} />
+      <FreeDiagnosisModal 
+        open={openConsult} 
+        setOpen={setOpenConsult}
+        selectedService={selectedService}
+        onServiceReset={() => setSelectedService(null)}
+      />
       {/* 푸터 */}
       <Footer />
     </div>
