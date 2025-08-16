@@ -270,7 +270,7 @@ export default function PricingPage() {
                         </Button>
                         <Button variant="outline" className="flex-1 h-12 rounded-xl border-2 border-slate-200 hover:border-yellow-400">
                           <Clock className="w-5 h-5 mr-2" />
-                          무료 상담 신청
+                          상담 신청
                         </Button>
                       </div>
                     </div>

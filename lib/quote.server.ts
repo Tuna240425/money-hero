@@ -91,7 +91,7 @@ export function generateQuoteHTML(form: QuoteForm) {
     <div class="highlight-box">
       <h3 style="margin:0 0 20px 0;color:#92400e;">🎯 포함 서비스</h3>
       <ul style="margin:0;padding-left:25px;">
-        <li style="margin-bottom:12px;color:#78350f;"><strong>무료 사전 상담:</strong> 회수 가능성·기간 분석</li>
+        <li style="margin-bottom:12px;color:#78350f;"><strong>사전 상담:</strong> 회수 가능성·기간 분석</li>
         <li style="margin-bottom:12px;color:#78350f;"><strong>1차 법적 조치:</strong> 내용증명 + 지급명령 신청</li>
         <li style="margin-bottom:12px;color:#78350f;"><strong>보전 조치:</strong> 필요시 가압류/가처분</li>
         <li style="margin-bottom:12px;color:#78350f;"><strong>강제 집행:</strong> 재산조회 및 압류</li>

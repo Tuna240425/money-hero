@@ -184,8 +184,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onFormSubmit }) => {
           </p>
           <div className="flex flex-wrap gap-4 text-lg text-white/90">
             <div className="flex items-center"><Shield className="w-6 h-6 text-yellow-400 mr-2" />변호사 직접 수행</div>
-            <div className="flex items-center"><Zap className="w-6 h-6 text-yellow-400 mr-2" />당일 가압류 진단</div>
-            <div className="flex items-center"><Star className="w-6 h-6 text-yellow-400 mr-2" />회수율 85%</div>
+            <div className="flex items-center"><Zap className="w-6 h-6 text-yellow-400 mr-2" />당일 진단</div>
           </div>
         </div>
 

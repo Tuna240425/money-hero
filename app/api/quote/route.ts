@@ -89,7 +89,7 @@ function calculateMatrixQuote(amount: string, counterparty: string, role: string
       ? `회수금액의 ${startCreditorRange[0]}~${startCreditorRange[1]}%`
       : `협상된 감액의 ${startDebtorRange[0]}~${startDebtorRange[1]}%`,
     features: [
-      "무료 초기 상담",
+      "초기 상담",
       "내용증명 발송",
       "기본 법률 자문",
       "성공 시에만 보수"
